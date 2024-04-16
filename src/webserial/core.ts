@@ -56,6 +56,14 @@ export class SmartKnobCore {
     );
   }
 
+  public sendCommand(command: PB.SmartKnobCommand): void {
+    this.enqueueMessage(
+      PB.ToSmartknob.create({
+        smartknobCommand: command,
+      }),
+    );
+  }
+
   protected onReceivedData(data: Uint8Array) {
     this.buffer = Uint8Array.from([...this.buffer, ...data]);
 

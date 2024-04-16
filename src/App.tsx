@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { PB } from './proto/dist/protos';
 import { SmartKnobWebSerial } from './webserial';
 import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from './util';
 
 function App() {
+  const [macAddress, setMacAddress] = useState<string | null>(null);
   const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | null>(null);
   const [smartKnobState, setSmartKnobState] = useState<
     NoUndefinedField<PB.ISmartKnobState>
@@ -16,7 +17,11 @@ function App() {
       },
     ) as NoUndefinedField<PB.ISmartKnobState>,
   );
+  const [smartKnobLog, setSmartKnobLog] = useState<Array<string>>([]);
+  const logRef = useRef<HTMLDivElement>(null);
+
   const connectToSerial = async () => {
+    var _smartKnobLog = [...smartKnobLog];
     try {
       if (navigator.serial) {
         // previousPressNonceRef.current = 0;
@@ -29,6 +34,10 @@ function App() {
           setSmartKnob(null);
         });
         const smartKnob = new SmartKnobWebSerial(serialPort, (message) => {
+          if (message.macAddress !== null) {
+            setMacAddress(message.macAddress);
+          }
+
           if (
             message.payload === 'smartknobState' &&
             message.smartknobState !== null
@@ -41,7 +50,9 @@ function App() {
           }
 
           if (message.payload === 'log' && message.log !== null) {
-            console.log('LOG from smartknob', message.log?.msg);
+            // console.log('LOG from smartknob', message.log?.msg);
+            _smartKnobLog = [..._smartKnobLog, message.log?.msg || ''];
+            setSmartKnobLog(_smartKnobLog);
           }
         });
         setSmartKnob(smartKnob);
@@ -55,17 +66,58 @@ function App() {
       setSmartKnob(null);
     }
   };
+
+  useEffect(() => {
+    logRef.current?.lastElementChild?.scrollIntoView();
+  }, [smartKnobLog]);
+
   return (
     <>
-      <div>
-        {smartKnob != null ? (
-          <div>smartknob connected</div>
-        ) : navigator.serial ? (
-          <button onClick={connectToSerial}>Connect via Web Serial</button>
-        ) : (
-          'Web Serial API is not supported in this browser.'
-        )}
-      </div>
+      {smartKnob != null ? (
+        <div className='flex flex-col items-center'>
+          <div>SmartKnob Connected - {macAddress}</div>
+          <div className='flex flex-col w-full gap-4'>
+            {/* CONSOLE DEBUG INFO */}
+            <h2>SmartKnob Log</h2>
+            <div ref={logRef} className='h-[300px] overflow-y-auto'>
+              {smartKnobLog.map((log, index) => (
+                <li key={index} className=''>
+                  {log}
+                </li>
+              ))}
+            </div>
+          </div>
+          <div className='m-4 gap-2 flex'>
+            <button className='btn !bg-green-500 !text-zinc-700'>
+              Download Log
+            </button>
+            <button
+              className='btn'
+              onClick={() => {
+                smartKnob.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE);
+              }}
+            >
+              Motor Calibration
+            </button>
+            <button
+              className='btn'
+              onClick={() => {
+                smartKnob.sendCommand(PB.SmartKnobCommand.STRAIN_CALIBRATE);
+              }}
+            >
+              Strain Calibration
+            </button>
+          </div>
+        </div>
+      ) : navigator.serial ? (
+        <div className='flex items-center flex-col'>
+          <button className='btn' onClick={connectToSerial}>
+            Connect via Web Serial
+          </button>
+        </div>
+      ) : (
+        'Web Serial API is not supported in this browser.'
+      )}
     </>
   );
 }

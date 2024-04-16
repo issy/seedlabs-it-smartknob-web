@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  @apply bg-zinc-800 text-white list-none  m-8;
+}
+
+.btn {
+  @apply border-2 border-zinc-500 p-2 rounded-md bg-zinc-900 text-white;
+}
