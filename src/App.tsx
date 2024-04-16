@@ -6,7 +6,7 @@ import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from './util';
 
 interface SmartKnobLog {
   timestamp: number;
-  type?: string;
+  tag?: string;
   msg: string;
 }
 
@@ -24,7 +24,7 @@ function App() {
     ) as NoUndefinedField<PB.ISmartKnobState>,
   );
   const [smartKnobLog, setSmartKnobLog] = useState<Array<SmartKnobLog>>([]);
-  const logRef = useRef<HTMLDivElement>(null);
+  const logRef = useRef<HTMLOListElement>(null);
 
   const connectToSerial = async () => {
     var _smartKnobLog = [...smartKnobLog];
@@ -87,43 +87,50 @@ function App() {
           <div className='flex flex-col w-full gap-4'>
             {/* CONSOLE DEBUG INFO */}
             <h2>SmartKnob Log</h2>
-            <div ref={logRef} className='h-[300px] overflow-y-auto'>
-              {smartKnobLog.map((log, index) => {
-                const date = new Date(log.timestamp);
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const seconds = String(date.getSeconds()).padStart(2, '0');
-                const timeString = `${hours}:${minutes}:${seconds}`;
+            <div className='border-2 border-zinc-500 bg-zinc-900 rounded-xl p-4 overflow-visible'>
+              <ol
+                ref={logRef}
+                className='h-96 scrollbar overflow-y-auto scrollbar flex flex-col'
+              >
+                {smartKnobLog.map((log, index) => {
+                  const date = new Date(log.timestamp);
+                  const hours = String(date.getHours()).padStart(2, '0');
+                  const minutes = String(date.getMinutes()).padStart(2, '0');
+                  const seconds = String(date.getSeconds()).padStart(2, '0');
+                  const timeString = `${hours}:${minutes}:${seconds}`;
 
-                var logTypeClass = '';
+                  var logTypeClass = '';
 
-                switch (log.type) {
-                  case 'ERROR':
-                    logTypeClass = 'border-red-500';
-                    break;
-                  case 'WARNING':
-                    logTypeClass = 'border-yellow-500';
-                    break;
-                  case 'DEBUG':
-                    logTypeClass = 'border-orange-500';
-                    break;
-                  default:
-                    logTypeClass = 'border-blue-500';
-                    break;
-                }
+                  switch (log.tag) {
+                    case 'ERROR':
+                      logTypeClass = 'border-rose-900 bg-red-200';
+                      break;
+                    case 'WARNING':
+                      logTypeClass = 'border-orange-600 bg-yellow-200';
+                      break;
+                    case 'DEBUG':
+                      logTypeClass = 'border-green-800 bg-green-200';
+                      break;
+                    default:
+                      logTypeClass = 'border-blue-800 bg-blue-200';
+                      log.tag = 'INFO';
+                      break;
+                  }
 
-                return (
-                  <li key={index} className='p-1'>
-                    <span className='text-zinc-500'>{timeString}</span>
-                    <span
-                      className={`bg-zinc-400 p-1 ml-2 border-l-2 rounded-r-md mr-3 ${logTypeClass}`}
-                    >
-                      {log.type ?? 'INFO'}
-                    </span>
-                    {log.msg}
-                  </li>
-                );
-              }, [])}
+                  return (
+                    <li key={index} className='p-1 flex items-center'>
+                      <span className='text-blue-300'>{timeString}</span>
+                      <span
+                        title={log.tag}
+                        className={`w-32 inline-block text-ellipsis overflow-hidden text-nowrap bg-zinc-400 p-1 ml-2 border-l-[3px] rounded-r-md mr-3 text-black text-sm ${logTypeClass}`}
+                      >
+                        {log.tag}
+                      </span>
+                      {log.msg}
+                    </li>
+                  );
+                }, [])}
+              </ol>
             </div>
           </div>
           <div className='m-4 gap-2 flex'>
