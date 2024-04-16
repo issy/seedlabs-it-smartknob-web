@@ -6,6 +6,7 @@ import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from './util';
 
 interface SmartKnobLog {
   timestamp: number;
+  type?: string;
   msg: string;
 }
 
@@ -93,11 +94,31 @@ function App() {
                 const minutes = String(date.getMinutes()).padStart(2, '0');
                 const seconds = String(date.getSeconds()).padStart(2, '0');
                 const timeString = `${hours}:${minutes}:${seconds}`;
+
+                var logTypeClass = '';
+
+                switch (log.type) {
+                  case 'ERROR':
+                    logTypeClass = 'border-red-500';
+                    break;
+                  case 'WARNING':
+                    logTypeClass = 'border-yellow-500';
+                    break;
+                  case 'DEBUG':
+                    logTypeClass = 'border-orange-500';
+                    break;
+                  default:
+                    logTypeClass = 'border-blue-500';
+                    break;
+                }
+
                 return (
-                  <li key={index} className=''>
-                    <span className='text-zinc-500'>
-                      {timeString}
-                      <span className='ml-2 mr-4'>-</span>
+                  <li key={index} className='p-1'>
+                    <span className='text-zinc-500'>{timeString}</span>
+                    <span
+                      className={`bg-zinc-400 p-1 ml-2 border-l-2 rounded-r-md mr-3 ${logTypeClass}`}
+                    >
+                      {log.type ?? 'INFO'}
                     </span>
                     {log.msg}
                   </li>
