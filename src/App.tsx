@@ -4,6 +4,11 @@ import { PB } from './proto/dist/protos';
 import { SmartKnobWebSerial } from './webserial';
 import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from './util';
 
+interface SmartKnobLog {
+  timestamp: number;
+  msg: string;
+}
+
 function App() {
   const [macAddress, setMacAddress] = useState<string | null>(null);
   const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | null>(null);
@@ -17,7 +22,7 @@ function App() {
       },
     ) as NoUndefinedField<PB.ISmartKnobState>,
   );
-  const [smartKnobLog, setSmartKnobLog] = useState<Array<string>>([]);
+  const [smartKnobLog, setSmartKnobLog] = useState<Array<SmartKnobLog>>([]);
   const logRef = useRef<HTMLDivElement>(null);
 
   const connectToSerial = async () => {
@@ -51,7 +56,9 @@ function App() {
 
           if (message.payload === 'log' && message.log !== null) {
             // console.log('LOG from smartknob', message.log?.msg);
-            _smartKnobLog = [..._smartKnobLog, message.log?.msg || ''];
+            const timestamp = Date.now();
+            const log = { timestamp, msg: message.log?.msg || '' };
+            _smartKnobLog = [..._smartKnobLog, log];
             setSmartKnobLog(_smartKnobLog);
           }
         });
@@ -80,11 +87,22 @@ function App() {
             {/* CONSOLE DEBUG INFO */}
             <h2>SmartKnob Log</h2>
             <div ref={logRef} className='h-[300px] overflow-y-auto'>
-              {smartKnobLog.map((log, index) => (
-                <li key={index} className=''>
-                  {log}
-                </li>
-              ))}
+              {smartKnobLog.map((log, index) => {
+                const date = new Date(log.timestamp);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+                const timeString = `${hours}:${minutes}:${seconds}`;
+                return (
+                  <li key={index} className=''>
+                    <span className='text-zinc-500'>
+                      {timeString}
+                      <span className='ml-2 mr-4'>-</span>
+                    </span>
+                    {log.msg}
+                  </li>
+                );
+              }, [])}
             </div>
           </div>
           <div className='m-4 gap-2 flex'>
