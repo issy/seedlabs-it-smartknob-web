@@ -6,7 +6,7 @@ import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from './util';
 
 interface SmartKnobLog {
   timestamp: number;
-  tag?: string;
+  log_level?: string;
   msg: string;
 }
 
@@ -58,7 +58,33 @@ function App() {
           if (message.payload === 'log' && message.log !== null) {
             // console.log('LOG from smartknob', message.log?.msg);
             const timestamp = Date.now();
-            const log = { timestamp, msg: message.log?.msg || '' };
+            console.log(message.log?.logLevel);
+
+            var log_level = 'INFO';
+            switch (message.log?.logLevel) {
+              case PB.LogLevel.INFO:
+                log_level = 'INFO';
+
+                break;
+              case PB.LogLevel.WARNING:
+                log_level = 'WARNING';
+                break;
+              case PB.LogLevel.ERROR:
+                log_level = 'ERROR';
+                break;
+              case PB.LogLevel.DEBUG:
+                log_level = 'DEBUG';
+                break;
+              default:
+                log_level = 'INFO';
+                break;
+            }
+
+            const log = {
+              timestamp,
+              log_level,
+              msg: message.log?.msg || '',
+            };
             _smartKnobLog = [..._smartKnobLog, log];
             setSmartKnobLog(_smartKnobLog);
           }
@@ -101,19 +127,19 @@ function App() {
 
                   var logTypeClass = '';
 
-                  switch (log.tag) {
+                  switch (log.log_level) {
                     case 'ERROR':
-                      logTypeClass = 'border-rose-900 bg-red-200';
+                      logTypeClass = '!border-rose-900 !bg-red-200';
                       break;
                     case 'WARNING':
-                      logTypeClass = 'border-orange-600 bg-yellow-200';
+                      logTypeClass = '!border-orange-600 !bg-yellow-200';
                       break;
                     case 'DEBUG':
-                      logTypeClass = 'border-green-800 bg-green-200';
+                      logTypeClass = '!border-green-800 !bg-green-200';
                       break;
                     default:
-                      logTypeClass = 'border-blue-800 bg-blue-200';
-                      log.tag = 'INFO';
+                      logTypeClass = '!border-blue-800 !bg-blue-200';
+                      log.log_level = 'INFO';
                       break;
                   }
 
@@ -121,10 +147,10 @@ function App() {
                     <li key={index} className='p-1 flex items-center'>
                       <span className='text-blue-300'>{timeString}</span>
                       <span
-                        title={log.tag}
+                        title={log.log_level}
                         className={`w-32 inline-block text-ellipsis overflow-hidden text-nowrap bg-zinc-400 p-1 ml-2 border-l-[3px] rounded-r-md mr-3 text-black text-sm ${logTypeClass}`}
                       >
-                        {log.tag}
+                        {log.log_level}
                       </span>
                       {log.msg}
                     </li>
