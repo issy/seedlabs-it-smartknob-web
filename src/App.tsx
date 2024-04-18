@@ -27,7 +27,7 @@ function App() {
   const logRef = useRef<HTMLOListElement>(null);
 
   const connectToSerial = async () => {
-    var _smartKnobLog = [...smartKnobLog];
+    var _smartKnobLog: Array<SmartKnobLog> = [];
     try {
       if (navigator.serial) {
         // previousPressNonceRef.current = 0;
