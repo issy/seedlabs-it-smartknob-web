@@ -107,6 +107,10 @@ function App() {
       selectedLogLevels.delete(logLevel);
       setSelectedLogLevels(selectedLogLevels);
     } else setSelectedLogLevels(selectedLogLevels.add(logLevel));
+    localStorage.setItem(
+      "logLevels",
+      JSON.stringify(Array.from(selectedLogLevels)),
+    );
   };
 
   const toggleVerboseLogging = () => {
@@ -127,6 +131,13 @@ function App() {
     if (localStorage.getItem("darkMode") === "true") {
       setDarkMode(true);
       document.body.classList.add("dark");
+    }
+
+    if (localStorage.getItem("logLevels") !== null) {
+      const storedLogLevels = new Set<PB.LogLevel>(
+        JSON.parse(localStorage.getItem("logLevels")!),
+      );
+      setSelectedLogLevels(storedLogLevels);
     }
   }, []);
 
