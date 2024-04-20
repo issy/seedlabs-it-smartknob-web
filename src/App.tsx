@@ -3,7 +3,11 @@ import "./App.scss";
 import { PB } from "./proto/dist/protos";
 import { SmartKnobWebSerial } from "./webserial";
 import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from "./util";
-import { IconChevronCompactDown, IconChevronDown } from "@tabler/icons-react";
+import {
+  IconChevronCompactDown,
+  IconChevronDown,
+  IconChevronUp,
+} from "@tabler/icons-react";
 import { MessageCallback } from "./webserial/core";
 
 interface SmartKnobLog {
@@ -29,14 +33,14 @@ function App() {
   );
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
   const [log, setLog] = useState<Array<SmartKnobLog>>([]);
+  const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
+    new Set([PB.LogLevel.INFO, PB.LogLevel.WARNING, PB.LogLevel.ERROR]),
+  );
+
   const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
+  const [verboseLogging, setVerboseLogging] = useState(false);
+  const [originLogging, setOriginLogging] = useState(true);
   const logRef = useRef<HTMLOListElement>(null);
-  const [selectedLogLevels, setSelectedLogLevels] = useState<
-    Array<PB.LogLevel>
-  >([PB.LogLevel.INFO, PB.LogLevel.WARNING, PB.LogLevel.ERROR]);
-  var _selectedLogLevels = selectedLogLevels;
-  const [verboseLogging, setVerboseLogging] = useState<boolean>(false);
-  const [originLogging, setOriginLogging] = useState<boolean>(false);
 
   const connectToSerial = async () => {
     try {
@@ -94,22 +98,11 @@ function App() {
     }
   };
 
-  const toggleLogLevel = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-    console.log(parseInt(e.target.value) as PB.LogLevel);
-    console.log(PB.LogLevel.DEBUG);
-    if (e.target.checked) {
-      setSelectedLogLevels([
-        ...selectedLogLevels,
-        parseInt(e.target.value) as PB.LogLevel,
-      ]);
-    } else {
-      setSelectedLogLevels(
-        selectedLogLevels.filter(
-          (level) => level !== (parseInt(e.target.value) as PB.LogLevel),
-        ),
-      );
-    }
+  const toggleLogLevel = (logLevel: PB.LogLevel) => {
+    if (selectedLogLevels.has(logLevel)) {
+      selectedLogLevels.delete(logLevel);
+      setSelectedLogLevels(selectedLogLevels);
+    } else setSelectedLogLevels(selectedLogLevels.add(logLevel));
   };
 
   const toggleVerboseLogging = () => {
@@ -128,7 +121,7 @@ function App() {
     if (newLogMessage == null) return;
     setFullLog([...fullLog, newLogMessage]);
 
-    if (selectedLogLevels.includes(newLogMessage.level)) {
+    if (selectedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
       setLog([...log, newLogMessage]);
     }
@@ -137,149 +130,135 @@ function App() {
   return (
     <>
       {smartKnob != null ? (
-        <div className="flex flex-col items-center">
-          <div>SmartKnob Connected - {macAddress}</div>
-          <div className="flex w-full flex-col gap-4">
-            {/* CONSOLE DEBUG INFO */}
-            <h2>SmartKnob Log</h2>
-            <div className="overflow-visible rounded-xl border-2 border-zinc-500 bg-zinc-900 p-4">
-              <ol
-                ref={logRef}
-                className="scrollbar scrollbar flex h-96 flex-col overflow-y-auto"
-              >
-                {log.map((msg, index) => {
-                  const date = new Date(msg.timestamp);
-                  const hours = String(date.getHours()).padStart(2, "0");
-                  const minutes = String(date.getMinutes()).padStart(2, "0");
-                  const seconds = String(date.getSeconds()).padStart(2, "0");
-                  const timeString = `${hours}:${minutes}:${seconds}`;
-
-                  var logTypeClass = "";
-                  var logLevelString = "";
-
-                  switch (msg.level) {
-                    case PB.LogLevel.INFO:
-                      logTypeClass = "!border-blue-800 !bg-blue-200";
-                      logLevelString = "INFO";
-                      break;
-                    case PB.LogLevel.DEBUG:
-                      logTypeClass = "!border-green-800 !bg-green-200";
-                      logLevelString = "DEBUG";
-                      break;
-                    case PB.LogLevel.WARNING:
-                      logTypeClass = "!border-orange-600 !bg-yellow-200";
-                      logLevelString = "WARNING";
-                      break;
-                    case PB.LogLevel.ERROR:
-                      logTypeClass = "!border-rose-800 !bg-red-200";
-                      logLevelString = "ERROR";
-                      break;
-
-                    default:
-                      logTypeClass = "!border-blue-800 !bg-blue-200";
-                      logLevelString = "UNKNOWN";
-                      break;
-                  }
-
-                  return (
-                    <li
-                      key={index}
-                      className="flex items-center text-nowrap p-1"
-                    >
-                      <div className="text-blue-300">{timeString}</div>
-                      <div
-                        title={logLevelString}
-                        className={`ml-2 mr-3 inline-block overflow-hidden text-ellipsis text-nowrap rounded-r-md border-l-[3px] bg-zinc-400 p-1 text-sm text-black ${logTypeClass}`}
-                      >
-                        {!originLogging ? logLevelString : msg.origin}
-                        {msg.isVerbose ? " (" : ""}
-                        <span className="text-orange-500">
-                          {msg.isVerbose ? "V" : ""}
-                        </span>
-                        {msg.isVerbose ? ")" : ""}
-                      </div>
-                      <div className="overflow-hidden text-ellipsis text-nowrap">
-                        {msg.msg}
-                      </div>
-                    </li>
-                  );
-                }, [])}
-              </ol>
-              <div className="mt-4 flex h-14 w-full items-center justify-between rounded-md bg-zinc-400 p-[5px]">
-                <div className="flex gap-2">
-                  <div className="multi-select">
-                    <button className="btn multi-select-btn">
-                      Select Log Levels <IconChevronDown />
-                    </button>
-                    <div className="multi-select-dropdown">
-                      <label className="flex justify-between">
-                        INFO{" "}
-                        <input
-                          type="checkbox"
-                          value={PB.LogLevel.INFO}
-                          checked={selectedLogLevels.includes(PB.LogLevel.INFO)}
-                          onChange={(e) => toggleLogLevel(e)}
-                        />
-                      </label>
-                      <label>
-                        DEBUG{" "}
-                        <input
-                          type="checkbox"
-                          value={PB.LogLevel.DEBUG}
-                          checked={selectedLogLevels.includes(
-                            PB.LogLevel.DEBUG,
-                          )}
-                          onChange={(e) => toggleLogLevel(e)}
-                        />
-                      </label>
-                      <label>
-                        WARNING{" "}
-                        <input
-                          type="checkbox"
-                          value={PB.LogLevel.WARNING}
-                          checked={selectedLogLevels.includes(
-                            PB.LogLevel.WARNING,
-                          )}
-                          onChange={(e) => toggleLogLevel(e)}
-                        />
-                      </label>
-                      <label>
-                        ERROR{" "}
-                        <input
-                          type="checkbox"
-                          value={PB.LogLevel.ERROR}
-                          checked={selectedLogLevels.includes(
-                            PB.LogLevel.ERROR,
-                          )}
-                          onChange={(e) => toggleLogLevel(e)}
-                        />
-                      </label>
-                    </div>
-                  </div>
+        <div className="container">
+          <div className="page-title">
+            <h1>SMARTKNOB DEV KIT</h1>
+            <h3>Configuration and Debugging console</h3>
+          </div>
+          <div className="log">
+            <header>
+              <div>
+                {" "}
+                <h3>[1]</h3>
+                <h1>LOGS</h1>
+              </div>
+              <IconChevronUp size={48} />
+            </header>
+            <div className="log-container">
+              <div className="log-header">
+                <div className="log-levels">
                   <button
-                    className="btn !bg-orange-800"
+                    className={
+                      selectedLogLevels.has(PB.LogLevel.INFO) ? "active" : ""
+                    }
+                    onClick={() => toggleLogLevel(PB.LogLevel.INFO)}
+                  >
+                    <div className="log-color-indicator  bg-log-info"></div>
+                    INFO
+                  </button>
+                  <button
+                    className={
+                      selectedLogLevels.has(PB.LogLevel.DEBUG) ? "active" : ""
+                    }
+                    onClick={() => toggleLogLevel(PB.LogLevel.DEBUG)}
+                  >
+                    <div className="log-color-indicator bg-log-debug"></div>
+                    DEBUG
+                  </button>
+                  <button
+                    className={
+                      selectedLogLevels.has(PB.LogLevel.WARNING) ? "active" : ""
+                    }
+                    onClick={() => toggleLogLevel(PB.LogLevel.WARNING)}
+                  >
+                    <div className="log-color-indicator bg-log-warning"></div>
+                    WARNING
+                  </button>
+                  <button
+                    className={
+                      selectedLogLevels.has(PB.LogLevel.ERROR) ? "active" : ""
+                    }
+                    onClick={() => toggleLogLevel(PB.LogLevel.ERROR)}
+                  >
+                    <div className="log-color-indicator bg-log-error"></div>
+                    ERROR
+                  </button>
+                </div>
+                <div className="log-toggles">
+                  <button
+                    className={verboseLogging ? "active" : ""}
                     onClick={toggleVerboseLogging}
                   >
                     TOGGLE VERBOSE
                   </button>
                   <button
-                    className="btn !bg-slate-600"
+                    className={originLogging ? "active" : ""}
                     onClick={toggleOriginLogging}
                   >
                     TOGGLE ORIGIN
                   </button>
                 </div>
-                <div>
-                  <button className="btn !bg-emerald-800">DOWNLOAD LOG</button>
-                </div>
+              </div>
+              <div className="log-console">
+                <ol ref={logRef}>
+                  {log.map((msg, index) => {
+                    const date = new Date(msg.timestamp);
+                    const hours = String(date.getHours()).padStart(2, "0");
+                    const minutes = String(date.getMinutes()).padStart(2, "0");
+                    const seconds = String(date.getSeconds()).padStart(2, "0");
+                    const timeString = `${hours}:${minutes}:${seconds}`;
+
+                    var logTypeClass = "";
+                    var logLevelString = "";
+
+                    switch (msg.level) {
+                      case PB.LogLevel.INFO:
+                        logTypeClass = "!border-blue-800 !bg-blue-200";
+                        logLevelString = "INFO";
+                        break;
+                      case PB.LogLevel.DEBUG:
+                        logTypeClass = "!border-green-800 !bg-green-200";
+                        logLevelString = "DEBUG";
+                        break;
+                      case PB.LogLevel.WARNING:
+                        logTypeClass = "!border-orange-600 !bg-yellow-200";
+                        logLevelString = "WARNING";
+                        break;
+                      case PB.LogLevel.ERROR:
+                        logTypeClass = "!border-rose-800 !bg-red-200";
+                        logLevelString = "ERROR";
+                        break;
+
+                      default:
+                        logTypeClass = "!border-blue-800 !bg-blue-200";
+                        logLevelString = "UNKNOWN";
+                        break;
+                    }
+
+                    return (
+                      <li key={index}>
+                        <div>
+                          <div
+                            className={`log-color-indicator  bg-log-${logLevelString.toLowerCase()}`}
+                          ></div>
+                          <p className="log-console-time">{timeString}</p>
+                          <p className="log-console-msg">{msg.msg}</p>
+                        </div>
+                        {originLogging && msg.origin && (
+                          <p className="log-console-origin">{msg.origin}</p>
+                        )}
+                      </li>
+                    );
+                  }, [])}
+                </ol>
               </div>
             </div>
           </div>
-          <div className="m-4 flex gap-2">
+          {/* <div className="m-4 flex gap-2">
             <button
               className="btn"
               onClick={() => {
-                smartKnob.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE);
+                // smartKnob.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE);
               }}
             >
               Motor Calibration
@@ -287,12 +266,12 @@ function App() {
             <button
               className="btn"
               onClick={() => {
-                smartKnob.sendCommand(PB.SmartKnobCommand.STRAIN_CALIBRATE);
+                // smartKnob.sendCommand(PB.SmartKnobCommand.STRAIN_CALIBRATE);
               }}
             >
               Strain Calibration
             </button>
-          </div>
+          </div> */}
         </div>
       ) : navigator.serial ? (
         <div className="flex flex-col items-center">

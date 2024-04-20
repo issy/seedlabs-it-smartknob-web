@@ -3,24 +3,9 @@
 @tailwind utilities;
 
 :root {
-  @apply bg-zinc-800 text-white list-none  m-8;
+  @apply bg-white p-12;
 }
 
 .btn {
-  @apply border-2 border-zinc-500 p-2 rounded-md bg-zinc-900 text-white;
-}
-
-.scrollbar {
-  &::-webkit-scrollbar {
-    @apply w-3 bg-gray-400 rounded-lg;
-  }
-  &::-webkit-scrollbar-thumb {
-    @apply bg-blue-600 rounded-lg;
-  }
-  &::-webkit-scrollbar-track:hover {
-    @apply bg-gray-300 rounded-lg;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    @apply bg-blue-400 rounded-lg;
-  }
+  @apply rounded-md border-2 border-zinc-500 bg-zinc-900 p-2 text-white;
 }

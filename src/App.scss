@@ -1,3 +1,87 @@
+.container {
+  @apply bg-primary flex h-screen flex-col items-center rounded-lg p-10;
+}
+
+.page-title {
+  @apply mb-20 flex flex-col items-center;
+}
+
+h1 {
+  @apply text-skdk text-5xl font-bold #{!important};
+}
+
+h3 {
+  @apply text-skdk text-xl font-medium #{!important};
+}
+
+.log {
+  @apply border-skdk flex w-full flex-col gap-4 border-[0.2rem] p-3;
+  header {
+    @apply flex justify-between;
+    div {
+      @apply flex gap-1;
+    }
+  }
+  .log-container {
+    @apply flex flex-col gap-4 p-6;
+  }
+  .log-header {
+    @apply flex justify-between gap-2;
+    .log-levels {
+      @apply flex h-full gap-2 text-nowrap;
+    }
+    .log-toggles {
+      @apply flex gap-2;
+    }
+    button {
+      @apply border-skdk text-skdk flex items-center gap-1 rounded-full border-2 px-3 py-1;
+      &.active {
+        @apply bg-secondary;
+      }
+    }
+  }
+
+  .log-color-indicator {
+    @apply inline-block h-3 w-3 rounded-full;
+  }
+
+  .log-console {
+    @apply bg-secondary flex h-96 flex-col   p-4 text-xs;
+    ol {
+      @apply h-full overflow-hidden overflow-y-scroll pr-3;
+      &::-webkit-scrollbar {
+        @apply bg-primary w-3 rounded-lg;
+      }
+      &::-webkit-scrollbar-thumb {
+        @apply bg-skdk rounded-lg;
+      }
+    }
+    li {
+      @apply flex flex-row justify-between p-2;
+      &:nth-child(odd) {
+        @apply bg-primary bg-opacity-25;
+      }
+      div {
+        @apply flex flex-row items-center gap-2;
+        .log-console-time {
+          @apply text-skdk;
+        }
+        .log-console-message {
+          @apply text-white;
+        }
+      }
+      .log-console-origin {
+        direction: rtl;
+        @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px];
+        ::before {
+          content: "...";
+          @apply absolute -left-5;
+        }
+      }
+    }
+  }
+}
+
 .multi-select {
   @apply relative flex h-full rounded-md bg-zinc-700;
   .multi-select-btn {
@@ -7,9 +91,6 @@
     @apply absolute top-12 flex w-full flex-col rounded-md border-2 border-zinc-950 bg-zinc-600 p-3;
     label {
       @apply flex justify-between;
-      input {
-        // @apply ;
-      }
     }
   }
 }
