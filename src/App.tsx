@@ -119,8 +119,16 @@ function App() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+    localStorage.setItem("darkMode", (!darkMode).toString());
     document.body.classList.toggle("dark");
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("darkMode") === "true") {
+      setDarkMode(true);
+      document.body.classList.add("dark");
+    }
+  }, []);
 
   useEffect(() => {
     logRef.current?.lastElementChild?.scrollIntoView();
