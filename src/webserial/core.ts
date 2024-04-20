@@ -1,7 +1,7 @@
-import { encode as cobsEncode, decode as cobsDecode } from './cobs';
-import * as CRC32 from 'crc-32';
+import { encode as cobsEncode, decode as cobsDecode } from "./cobs";
+import * as CRC32 from "crc-32";
 
-import { PB } from '../proto/dist/protos';
+import { PB } from "../proto/dist/protos";
 
 const PROTOBUF_PROTOCOL_VERSION = 1;
 
@@ -106,10 +106,10 @@ export class SmartKnobCore {
         );
         return;
       }
-      if (message.payload === 'ack') {
+      if (message.payload === "ack") {
         const nonce = message.ack?.nonce ?? undefined;
         if (nonce === undefined) {
-          console.warn('Received ack without nonce');
+          console.warn("Received ack without nonce");
         } else {
           this.handleAck(nonce);
         }

@@ -1,5 +1,5 @@
 // import SerialPort from 'serialport';
-import { MessageCallback, SmartKnobCore } from './core';
+import { MessageCallback, SmartKnobCore } from "./core";
 
 export class SmartKnobWebSerial extends SmartKnobCore {
   private port: SerialPort | null;
@@ -12,8 +12,8 @@ export class SmartKnobWebSerial extends SmartKnobCore {
     });
     this.port = port;
     this.portAvailable = true;
-    this.port.addEventListener('disconnect', () => {
-      console.log('shutting down on disconnect');
+    this.port.addEventListener("disconnect", () => {
+      console.log("shutting down on disconnect");
       this.port = null;
       this.portAvailable = false;
     });
@@ -25,7 +25,7 @@ export class SmartKnobWebSerial extends SmartKnobCore {
     }
     await this.port.open({ baudRate: SmartKnobCore.BAUD });
     if (this.port.readable === null || this.port.writable === null) {
-      throw new Error('Port missing readable or writable!');
+      throw new Error("Port missing readable or writable!");
     }
 
     const reader = this.port.readable.getReader();
@@ -47,17 +47,17 @@ export class SmartKnobWebSerial extends SmartKnobCore {
           }
         }
       } finally {
-        console.log('Releasing writer');
+        console.log("Releasing writer");
         writer?.releaseLock();
       }
     } finally {
-      console.log('Releasing reader');
+      console.log("Releasing reader");
       reader.releaseLock();
     }
   }
 
   private onError(e: unknown) {
-    console.error('Error writing serial', e);
+    console.error("Error writing serial", e);
     this.port?.close();
     this.port = null;
     this.portAvailable = false;
