@@ -1,82 +1,86 @@
 .container {
-  @apply bg-primary flex h-screen flex-col items-center rounded-lg p-10;
+  @apply flex h-screen flex-col items-center gap-4 rounded-lg bg-primary p-8 dark:bg-black;
+}
+
+.color-mode-toggle {
+  @apply absolute right-3 top-3 text-skdk dark:text-secondary;
 }
 
 .page-title {
-  @apply mb-20 flex flex-col items-center;
+  @apply mb-12 flex flex-col items-center;
 }
 
 h1 {
-  @apply text-skdk text-5xl font-bold #{!important};
+  @apply text-5xl font-bold text-skdk dark:text-secondary #{!important};
 }
 
 h3 {
-  @apply text-skdk text-xl font-medium #{!important};
+  @apply text-xl font-medium text-skdk dark:text-secondary #{!important};
 }
 
-.log {
-  @apply border-skdk flex w-full flex-col gap-4 border-[0.2rem] p-3;
+.item-container {
+  @apply flex w-full flex-col gap-4 border-[0.2rem] border-skdk p-3;
   header {
     @apply flex justify-between;
     div {
       @apply flex gap-1;
     }
   }
-  .log-container {
-    @apply flex flex-col gap-4 p-6;
+}
+.log-container {
+  @apply flex flex-col gap-4 p-6;
+}
+.log-header {
+  @apply flex justify-between gap-2;
+  .log-levels {
+    @apply flex h-full gap-2 text-nowrap;
   }
-  .log-header {
-    @apply flex justify-between gap-2;
-    .log-levels {
-      @apply flex h-full gap-2 text-nowrap;
-    }
-    .log-toggles {
-      @apply flex gap-2;
-    }
-    button {
-      @apply border-skdk text-skdk flex items-center gap-1 rounded-full border-2 px-3 py-1;
-      &.active {
-        @apply bg-secondary;
-      }
+  .log-toggles {
+    @apply flex gap-2;
+  }
+  button {
+    @apply flex items-center gap-1 rounded-full border-2 border-skdk px-3 py-1 text-skdk dark:text-primary;
+    &.active {
+      @apply bg-skdk text-primary;
     }
   }
+}
 
-  .log-color-indicator {
-    @apply inline-block h-3 w-3 rounded-full;
-  }
+.log-color-indicator {
+  @apply inline-block h-3 w-3 rounded-full;
+}
 
-  .log-console {
-    @apply bg-secondary flex h-96 flex-col   p-4 text-xs;
-    ol {
-      @apply h-full overflow-hidden overflow-y-scroll pr-3;
-      &::-webkit-scrollbar {
-        @apply bg-primary w-3 rounded-lg;
+.log-console {
+  @apply flex h-96 flex-col bg-secondary p-4   text-xs dark:bg-skdk;
+  ol {
+    @apply h-full overflow-hidden overflow-y-scroll pr-3;
+    &::-webkit-scrollbar {
+      @apply w-3 rounded-lg bg-primary;
+    }
+    &::-webkit-scrollbar-thumb {
+      @apply rounded-lg bg-skdk dark:bg-secondary;
+    }
+  }
+  li {
+    @apply flex flex-row justify-between p-2;
+    &:nth-child(odd) {
+      @apply bg-primary bg-opacity-25;
+    }
+    div {
+      @apply flex flex-row items-center gap-2;
+      .log-console-time {
+        @apply text-primary;
       }
-      &::-webkit-scrollbar-thumb {
-        @apply bg-skdk rounded-lg;
+      .log-console-msg {
+        @apply text-white;
       }
     }
-    li {
-      @apply flex flex-row justify-between p-2;
-      &:nth-child(odd) {
-        @apply bg-primary bg-opacity-25;
-      }
-      div {
-        @apply flex flex-row items-center gap-2;
-        .log-console-time {
-          @apply text-skdk;
-        }
-        .log-console-message {
-          @apply text-white;
-        }
-      }
-      .log-console-origin {
-        direction: rtl;
-        @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px];
-        ::before {
-          content: "...";
-          @apply absolute -left-5;
-        }
+    .log-console-origin {
+      direction: rtl;
+      @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px] text-skdk dark:text-gray-300;
+      ::before {
+        content: "...";
+        @apply absolute -left-5;
       }
     }
   }

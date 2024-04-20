@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  @apply bg-white p-12;
-}
-
-.btn {
-  @apply rounded-md border-2 border-zinc-500 bg-zinc-900 p-2 text-white;
+body {
+  @apply bg-white p-12 dark:bg-zinc-900;
 }
