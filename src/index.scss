@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  @apply bg-white p-12 dark:bg-zinc-900;
+  @apply flex flex-col items-center bg-white p-12 text-skdk dark:bg-zinc-900 dark:text-secondary;
 }

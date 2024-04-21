@@ -11,6 +11,7 @@ import {
   IconSun,
 } from "@tabler/icons-react";
 import { MessageCallback } from "./webserial/core";
+import seedlabsLogo from "./assets/logoFull_white_transparent.webp";
 
 interface SmartKnobLog {
   timestamp: number;
@@ -25,6 +26,7 @@ function App() {
 
   const [macAddress, setMacAddress] = useState<string | null>(null);
   const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | null>(null);
+  const [connectionState, setConnectionState] = useState(false);
   const [smartKnobState, setSmartKnobState] = useState<
     NoUndefinedField<PB.ISmartKnobState>
   >(
@@ -46,33 +48,51 @@ function App() {
   const [originLogging, setOriginLogging] = useState(true);
   const logRef = useRef<HTMLOListElement>(null);
 
-  const connectToSerial = async () => {
+  const connectToSmartKnob = async (serialPort: SerialPort) => {
     try {
-      if (navigator.serial) {
-        // previousPressNonceRef.current = 0;
-        // receivedPressNonceRef.current = false;
-
-        const serialPort = await navigator.serial.requestPort({
-          filters: SmartKnobWebSerial.USB_DEVICE_FILTERS,
-        });
-        serialPort.addEventListener("disconnect", () => {
-          setSmartKnob(null);
-        });
-        const smartKnob = new SmartKnobWebSerial(serialPort, onMessage);
-        setSmartKnob(smartKnob);
-        await smartKnob.openAndLoop();
-      } else {
-        console.error("Web Serial API is not supported in this browser.");
-        setSmartKnob(null);
+      // var smartKnob = null;
+      const smartKnob_ = new SmartKnobWebSerial(serialPort, onMessage);
+      setSmartKnob(smartKnob_);
+      if (smartKnob_ !== null) {
+        setConnectionState(true);
+        await smartKnob_.openAndLoop();
       }
     } catch (error) {
       console.error("Error with serial port:", error);
-      setSmartKnob(null);
+      setConnectionState(false);
+    }
+  };
+
+  const connectToSerial = async () => {
+    try {
+      if (navigator.serial) {
+        var serialPort = await navigator.serial.requestPort({
+          filters: SmartKnobWebSerial.USB_DEVICE_FILTERS,
+        });
+        serialPort.addEventListener("disconnect", async () => {
+          setConnectionState(false);
+          console.log("Device disconnected");
+        });
+        connectToSmartKnob(serialPort);
+      } else {
+        console.error("Web Serial API is not supported in this browser.");
+        setSmartKnob(null);
+        setConnectionState(false);
+      }
+    } catch (error) {
+      console.error("Error with serial port:", error);
+      setConnectionState(false);
     }
   };
 
   const onMessage = (message: PB.FromSmartKnob) => {
-    if (message.macAddress !== null && macAddress !== message.macAddress) {
+    //if statement resolves some issues that will be fixed in firmware at a later date.
+    if (
+      message.macAddress !== null &&
+      message.macAddress !== "" &&
+      message.macAddress.includes(":") &&
+      macAddress !== message.macAddress
+    ) {
       setMacAddress(message.macAddress);
     }
 
@@ -157,16 +177,23 @@ function App() {
 
   return (
     <>
-      <button className="color-mode-toggle" onClick={toggleDarkMode}>
-        {darkMode ? <IconSun size={24} /> : <IconMoon size={24} />}
-      </button>
       <div className="container">
+        <button className="color-mode-toggle" onClick={toggleDarkMode}>
+          {darkMode ? <IconSun size={24} /> : <IconMoon size={24} />}
+        </button>
         <div className="page-title">
           <h1>SMARTKNOB DEV KIT</h1>
           <h3>Configuration and Debugging console</h3>
         </div>
-        {smartKnob != null ? (
+        {navigator.serial ? (
           <>
+            <button
+              className="connect-btn"
+              onClick={connectToSerial}
+              disabled={connectionState}
+            >
+              {connectionState ? <>{macAddress}</> : <>CONNECT</>}
+            </button>
             <div className="item-container log">
               <header>
                 <div>
@@ -311,15 +338,16 @@ function App() {
               </header>
             </div>
           </>
-        ) : navigator.serial ? (
-          <div className="flex flex-col items-center">
-            <button className="btn" onClick={connectToSerial}>
-              Connect via Web Serial
-            </button>
-          </div>
         ) : (
           "Web Serial API is not supported in this browser."
         )}
+        <div className="flex-grow content-end">
+          <img
+            src={seedlabsLogo}
+            className="flex h-full w-60  flex-col"
+            alt=""
+          />
+        </div>
       </div>
     </>
   );

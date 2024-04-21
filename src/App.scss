@@ -1,9 +1,14 @@
 .container {
-  @apply flex h-screen flex-col items-center gap-4 rounded-lg bg-primary p-8 dark:bg-black;
+  min-height: calc(100vh - 6rem);
+  @apply relative flex h-full min-w-[900px] flex-col items-center gap-4 rounded-lg bg-primary p-8 dark:bg-black;
 }
 
 .color-mode-toggle {
-  @apply absolute right-3 top-3 text-skdk dark:text-secondary;
+  @apply absolute right-3 top-3;
+}
+
+.connect-btn {
+  @apply absolute left-3 top-3 rounded-md bg-skdk px-2 py-1 text-xs;
 }
 
 .page-title {
@@ -11,11 +16,11 @@
 }
 
 h1 {
-  @apply text-5xl font-bold text-skdk dark:text-secondary #{!important};
+  @apply text-5xl font-bold #{!important};
 }
 
 h3 {
-  @apply text-xl font-medium text-skdk dark:text-secondary #{!important};
+  @apply text-xl font-medium #{!important};
 }
 
 .item-container {
@@ -39,7 +44,7 @@ h3 {
     @apply flex gap-2;
   }
   button {
-    @apply flex items-center gap-1 rounded-full border-2 border-skdk px-3 py-1 text-skdk dark:text-primary;
+    @apply flex items-center gap-1 rounded-full border-2 border-skdk px-3 py-1 dark:text-primary;
     &.active {
       @apply bg-skdk text-primary;
     }
@@ -77,28 +82,7 @@ h3 {
     }
     .log-console-origin {
       direction: rtl;
-      @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px] text-skdk dark:text-gray-300;
-      ::before {
-        content: "...";
-        @apply absolute -left-5;
-      }
+      @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px]  dark:text-gray-300;
     }
   }
-}
-
-.multi-select {
-  @apply relative flex h-full rounded-md bg-zinc-700;
-  .multi-select-btn {
-    @apply flex;
-  }
-  .multi-select-dropdown {
-    @apply absolute top-12 flex w-full flex-col rounded-md border-2 border-zinc-950 bg-zinc-600 p-3;
-    label {
-      @apply flex justify-between;
-    }
-  }
-}
-
-.btn {
-  @apply select-none rounded-md bg-zinc-700 px-4 py-2 text-white;
 }

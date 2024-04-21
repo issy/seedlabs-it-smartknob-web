@@ -12,10 +12,21 @@ export class SmartKnobWebSerial extends SmartKnobCore {
     });
     this.port = port;
     this.portAvailable = true;
-    this.port.addEventListener("disconnect", () => {
-      console.log("shutting down on disconnect");
-      this.port = null;
-      this.portAvailable = false;
+    this.port.addEventListener("disconnect", async () => {
+      console.log("Device disconnected");
+      // this.port = null;
+      // this.portAvailable = false;
+      if (this.port !== null) {
+        // console.log(this.port);
+        // this.port.close();
+        // for (let index = 0; index < 9; index++) {
+        //   // if (this.port.)
+        //   // this.port.close();
+        //   await new Promise((resolve) => setTimeout(resolve, 2000));
+        //   console.log("Trying to reconnect...");
+        //   this.openAndLoop();
+        // }
+      }
     });
   }
 
@@ -53,6 +64,8 @@ export class SmartKnobWebSerial extends SmartKnobCore {
     } finally {
       console.log("Releasing reader");
       reader.releaseLock();
+      await this.port.close();
+      console.log("Port closed");
     }
   }
 
