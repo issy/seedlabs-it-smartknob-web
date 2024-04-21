@@ -54,7 +54,6 @@ function App() {
       const smartKnob_ = new SmartKnobWebSerial(serialPort, onMessage);
       setSmartKnob(smartKnob_);
       if (smartKnob_ !== null) {
-        setConnectionState(true);
         await smartKnob_.openAndLoop();
       }
     } catch (error) {
@@ -86,14 +85,10 @@ function App() {
   };
 
   const onMessage = (message: PB.FromSmartKnob) => {
-    //if statement resolves some issues that will be fixed in firmware at a later date.
-    if (
-      message.macAddress !== null &&
-      message.macAddress !== "" &&
-      message.macAddress.includes(":") &&
-      macAddress !== message.macAddress
-    ) {
-      setMacAddress(message.macAddress);
+    if (message.payload === "knob" && message.knob !== null) {
+      const knob = PB.Knob.create(message.knob);
+      setMacAddress(knob.macAddress);
+      setConnectionState(true);
     }
 
     if (

@@ -1,4 +1,5 @@
 // import SerialPort from 'serialport';
+import { PB } from "../proto/dist/protos";
 import { MessageCallback, SmartKnobCore } from "./core";
 
 export class SmartKnobWebSerial extends SmartKnobCore {
@@ -38,6 +39,8 @@ export class SmartKnobWebSerial extends SmartKnobCore {
     if (this.port.readable === null || this.port.writable === null) {
       throw new Error("Port missing readable or writable!");
     }
+
+    this.sendCommand(PB.SmartKnobCommand.GET_KNOB_INFO);
 
     const reader = this.port.readable.getReader();
     try {
