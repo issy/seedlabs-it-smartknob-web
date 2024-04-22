@@ -8,30 +8,39 @@
 }
 
 .connect-btn {
-  @apply absolute left-3 top-3 rounded-md bg-skdk px-2 py-1 text-xs;
+  @apply absolute left-3 top-3 rounded-md bg-skdk px-2 py-1 text-xs text-primary;
 }
 
 .page-title {
   @apply mb-12 flex flex-col items-center;
-}
+  h1 {
+    @apply text-5xl font-bold;
+  }
 
-h1 {
-  @apply text-5xl font-bold #{!important};
-}
-
-h3 {
-  @apply text-xl font-medium #{!important};
+  h3 {
+    @apply text-xl font-medium;
+  }
 }
 
 .item-container {
   @apply flex w-full flex-col gap-4 border-[0.2rem] border-skdk p-3;
   header {
-    @apply flex justify-between;
+    @apply flex items-center justify-between #{!important};
     div {
       @apply flex gap-1;
+      h1 {
+        @apply font-82XC text-6xl;
+      }
+      h3 {
+        @apply font-82ND text-2xl;
+      }
+    }
+    span {
+      @apply font-74MR  text-7xl;
     }
   }
 }
+
 .log-container {
   @apply flex flex-col gap-4 p-6;
 }

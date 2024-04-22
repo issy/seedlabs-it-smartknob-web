@@ -196,7 +196,7 @@ function App() {
                   <h3>[1]</h3>
                   <h1>LOGS</h1>
                 </div>
-                <IconChevronUp size={48} />
+                <span className="mr-4 -rotate-90">&lt;</span>
               </header>
               <div className="log-container">
                 <div className="log-header">
@@ -314,6 +314,9 @@ function App() {
                     }, [])}
                   </ol>
                 </div>
+                <div className="flex justify-end">
+                  <button className="btn">DOWNLOAD</button>
+                </div>
               </div>
             </div>
             <div className="item-container">
@@ -322,6 +325,7 @@ function App() {
                   <h3>[2]</h3>
                   <h1>MOTOR CALIBRATION</h1>
                 </div>
+                <span>-</span>
               </header>
             </div>
             <div className="item-container">
@@ -330,6 +334,7 @@ function App() {
                   <h3>[3]</h3>
                   <h1>STRAIN CALIBRATION</h1>
                 </div>
+                <span>-</span>
               </header>
             </div>
           </>

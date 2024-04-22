@@ -2,6 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: "82XC";
+    src: url("./assets/fonts/futr/82xc.ttf");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-82XC {
+    font-family: "82XC";
+    letter-spacing: 3px !important;
+  }
+
+  @font-face {
+    font-family: "82ND";
+    src: url("./assets/fonts/futr/82nd.otf");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-82ND {
+    font-family: "82ND";
+    letter-spacing: 3px !important;
+  }
+
+  @font-face {
+    font-family: "74MR";
+    src: url("./assets/fonts/futr/74mr.otf");
+  }
+
+  .font-74MR {
+    font-family: "74MR";
+  }
+
+  h1 {
+    @apply text-5xl;
+  }
+}
+
 body {
   @apply flex flex-col items-center bg-white p-12 text-skdk dark:bg-zinc-900 dark:text-secondary;
+}
+
+.btn {
+  @apply bg-skdk px-4 py-2 text-primary;
 }
