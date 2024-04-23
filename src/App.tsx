@@ -17,7 +17,7 @@ interface SmartKnobLog {
   timestamp: number;
   isVerbose: boolean;
   level: PB.LogLevel;
-  origin?: string;
+  origin: string;
   msg: string;
 }
 
@@ -120,12 +120,12 @@ function App() {
   const toggleLogLevel = (logLevel: PB.LogLevel) => {
     if (selectedLogLevels.has(logLevel)) {
       selectedLogLevels.delete(logLevel);
-      setSelectedLogLevels(selectedLogLevels);
     } else setSelectedLogLevels(selectedLogLevels.add(logLevel));
     localStorage.setItem(
       "logLevels",
       JSON.stringify(Array.from(selectedLogLevels)),
     );
+    setSelectedLogLevels(new Set([...selectedLogLevels]));
   };
 
   const toggleVerboseLogging = () => {
@@ -172,7 +172,7 @@ function App() {
 
   return (
     <>
-      <div className="container">
+      <div className="skdk-container">
         <button className="color-mode-toggle" onClick={toggleDarkMode}>
           {darkMode ? <IconSun size={24} /> : <IconMoon size={24} />}
         </button>
@@ -180,7 +180,8 @@ function App() {
           <h1>SMARTKNOB DEV KIT</h1>
           <h3>Configuration and Debugging console</h3>
         </div>
-        {navigator.serial ? (
+        {/* {navigator.serial ? ( */}
+        {true ? (
           <>
             <button
               className="connect-btn"
@@ -258,6 +259,10 @@ function App() {
                 <div className="log-console">
                   <ol ref={logRef}>
                     {log.map((msg, index) => {
+                      if (log.length > 100) {
+                        // Only display last 100 array items
+                        log.shift();
+                      }
                       const date = new Date(msg.timestamp);
                       const hours = String(date.getHours()).padStart(2, "0");
                       const minutes = String(date.getMinutes()).padStart(
@@ -297,6 +302,12 @@ function App() {
                           break;
                       }
 
+                      if (msg.origin.length > 40) {
+                        msg.origin = `...${msg.origin.slice(
+                          msg.origin.lastIndexOf("/", 40),
+                        )}`;
+                      }
+
                       return (
                         <li key={index}>
                           <div>
@@ -314,7 +325,7 @@ function App() {
                     }, [])}
                   </ol>
                 </div>
-                <div className="flex justify-end">
+                <div className="mb-3 mr-3 flex justify-end">
                   <button className="btn">DOWNLOAD</button>
                 </div>
               </div>

@@ -1,6 +1,18 @@
-.container {
+.skdk-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  text-wrap: nowrap;
   min-height: calc(100vh - 6rem);
-  @apply relative flex h-full min-w-[900px] flex-col items-center gap-4 rounded-lg bg-primary p-8 dark:bg-black;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem;
+
+  @apply m-auto rounded-lg bg-primary  dark:bg-black;
+  @screen sm {
+    padding: 4rem;
+  }
 }
 
 .color-mode-toggle {
@@ -12,40 +24,63 @@
 }
 
 .page-title {
-  @apply mb-12 flex flex-col items-center;
+  @apply my-8 flex flex-col items-center;
   h1 {
-    @apply text-5xl font-bold;
+    @apply text-3xl font-bold;
   }
 
   h3 {
-    @apply text-xl font-medium;
+    @apply text-sm font-medium;
+  }
+  @screen sm {
+    h1 {
+      @apply text-5xl;
+    }
+
+    h3 {
+      @apply text-xl;
+    }
   }
 }
 
 .item-container {
-  @apply flex w-full flex-col gap-4 border-[0.2rem] border-skdk p-3;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  @apply border-[0.2rem] border-skdk;
+
   header {
-    @apply flex items-center justify-between #{!important};
+    @apply m-3 flex items-center justify-between #{!important};
     div {
       @apply flex gap-1;
       h1 {
-        @apply font-82XC text-6xl;
+        @apply font-82XC text-3xl sm:text-6xl;
       }
       h3 {
-        @apply font-82ND text-2xl;
+        @apply font-82ND text-sm sm:text-2xl;
       }
     }
     span {
-      @apply font-74MR  text-7xl;
+      @apply font-74MR text-4xl sm:text-7xl;
     }
+  }
+
+  @screen md {
+    @apply p-3;
   }
 }
 
 .log-container {
-  @apply flex flex-col gap-4 p-6;
+  @apply flex flex-col gap-4;
 }
 .log-header {
-  @apply flex justify-between gap-2;
+  @apply flex justify-between gap-2 overflow-x-scroll px-3 sm:px-6;
+  &::-webkit-scrollbar {
+    @apply hidden;
+  }
   .log-levels {
     @apply flex h-full gap-2 text-nowrap;
   }
@@ -53,7 +88,7 @@
     @apply flex gap-2;
   }
   button {
-    @apply flex items-center gap-1 rounded-full border-2 border-skdk px-3 py-1 dark:text-primary;
+    @apply flex items-center gap-1 rounded-full border-2 border-skdk px-3 py-1 sm:px-6 dark:text-primary;
     &.active {
       @apply bg-skdk text-primary;
     }
@@ -65,33 +100,35 @@
 }
 
 .log-console {
-  @apply flex h-96 flex-col bg-secondary p-4   text-xs dark:bg-skdk;
+  @apply mx-3 h-96 flex-col  overflow-hidden  overflow-x-auto bg-secondary p-4 text-xs sm:px-8 dark:bg-skdk;
   ol {
-    @apply h-full overflow-hidden overflow-y-scroll pr-3;
+    @apply h-full min-w-fit  overflow-y-scroll pb-3 pr-3;
     &::-webkit-scrollbar {
       @apply w-3 rounded-lg bg-primary;
     }
     &::-webkit-scrollbar-thumb {
       @apply rounded-lg bg-skdk dark:bg-secondary;
     }
-  }
-  li {
-    @apply flex flex-row justify-between p-2;
-    &:nth-child(odd) {
-      @apply bg-primary bg-opacity-25;
+    &::-webkit-scrollbar-corner {
+      display: none;
     }
-    div {
-      @apply flex flex-row items-center gap-2;
-      .log-console-time {
-        @apply text-primary;
+    li {
+      @apply flex flex-row justify-between p-2;
+      &:nth-last-child(odd) {
+        @apply bg-primary bg-opacity-25;
       }
-      .log-console-msg {
-        @apply text-white;
+      div {
+        @apply flex flex-row items-center gap-2;
+        .log-console-time {
+          @apply text-primary;
+        }
+        .log-console-msg {
+          @apply text-white;
+        }
       }
-    }
-    .log-console-origin {
-      direction: rtl;
-      @apply relative max-w-[196px] overflow-hidden text-ellipsis text-[10px]  dark:text-gray-300;
+      .log-console-origin {
+        @apply ml-4 text-[10px] dark:text-gray-300;
+      }
     }
   }
 }

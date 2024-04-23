@@ -42,7 +42,11 @@
 }
 
 body {
-  @apply flex flex-col items-center bg-white p-12 text-skdk dark:bg-zinc-900 dark:text-secondary;
+  @apply w-full items-center overflow-scroll bg-white p-2 text-skdk md:p-4 lg:p-12 dark:bg-zinc-900 dark:text-secondary;
+}
+
+#root {
+  @apply flex h-full w-full flex-col items-center overflow-hidden;
 }
 
 .btn {
