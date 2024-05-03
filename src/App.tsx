@@ -170,7 +170,7 @@ function App() {
 
   const strainCalibStep = () => {
     if (strainCalibState === undefined)
-      return <p>Press to start calibration.</p>;
+      return <p>Press to start strain calibration.</p>;
 
     switch (strainCalibState.step) {
       case 1:
@@ -332,29 +332,23 @@ function App() {
                       );
                       const timeString = `${hours}:${minutes}:${seconds}`;
 
-                      var logTypeClass = "";
                       var logLevelString = "";
 
                       switch (msg.level) {
                         case PB.LogLevel.INFO:
-                          logTypeClass = "!border-blue-800 !bg-blue-200";
                           logLevelString = "INFO";
                           break;
                         case PB.LogLevel.DEBUG:
-                          logTypeClass = "!border-green-800 !bg-green-200";
                           logLevelString = "DEBUG";
                           break;
                         case PB.LogLevel.WARNING:
-                          logTypeClass = "!border-orange-600 !bg-yellow-200";
                           logLevelString = "WARNING";
                           break;
                         case PB.LogLevel.ERROR:
-                          logTypeClass = "!border-rose-800 !bg-red-200";
                           logLevelString = "ERROR";
                           break;
 
                         default:
-                          logTypeClass = "!border-blue-800 !bg-blue-200";
                           logLevelString = "UNKNOWN";
                           break;
                       }
@@ -450,7 +444,13 @@ function App() {
                 <button
                   className="btn"
                   onClick={() =>
-                    smartKnob?.sendCommand(PB.SmartKnobCommand.STRAIN_CALIBRATE)
+                    knob?.persistentConfig?.motor?.calibrated
+                      ? smartKnob?.sendCommand(
+                          PB.SmartKnobCommand.STRAIN_CALIBRATE,
+                        )
+                      : alert(
+                          "Motor not calibrated! Please calibrate motor first.",
+                        )
                   }
                 >
                   {strainCalibStep()}
