@@ -194,6 +194,18 @@ function App() {
       );
       setSelectedLogLevels(storedLogLevels);
     }
+
+    if (localStorage.getItem("logOpen") !== null) {
+      setLogOpen(localStorage.getItem("logOpen") === "true");
+    }
+
+    if (localStorage.getItem("motorCalibOpen") !== null) {
+      setMotorCalibOpen(localStorage.getItem("motorCalibOpen") === "true");
+    }
+
+    if (localStorage.getItem("strainCalibOpen") !== null) {
+      setStrainCalibOpen(localStorage.getItem("strainCalibOpen") === "true");
+    }
   }, []);
 
   useEffect(() => {
@@ -231,7 +243,12 @@ function App() {
               {connectionState ? <>{knob?.macAddress}</> : <>CONNECT</>}
             </button>
             <div className={`item-container log ${logOpen ? "active" : ""}`}>
-              <header onClick={() => setLogOpen(!logOpen)}>
+              <header
+                onClick={() => {
+                  localStorage.setItem("logOpen", (!logOpen).toString());
+                  setLogOpen(!logOpen);
+                }}
+              >
                 <div>
                   {" "}
                   <h3>[1]</h3>
@@ -373,7 +390,15 @@ function App() {
             <div
               className={`item-container relative ${motorCalibOpen ? "active" : ""}`}
             >
-              <header onClick={() => setMotorCalibOpen(!motorCalibOpen)}>
+              <header
+                onClick={() => {
+                  localStorage.setItem(
+                    "motorCalibOpen",
+                    (!motorCalibOpen).toString(),
+                  );
+                  setMotorCalibOpen(!motorCalibOpen);
+                }}
+              >
                 <div>
                   <h3>[2]</h3>
                   <h1>MOTOR CALIBRATION</h1>
@@ -399,7 +424,15 @@ function App() {
             <div
               className={`item-container relative ${strainCalibOpen ? "active" : ""}`}
             >
-              <header onClick={() => setStrainCalibOpen(!strainCalibOpen)}>
+              <header
+                onClick={() => {
+                  localStorage.setItem(
+                    "strainCalibOpen",
+                    (!strainCalibOpen).toString(),
+                  );
+                  setStrainCalibOpen(!strainCalibOpen);
+                }}
+              >
                 <div>
                   <h3>[3]</h3>
                   <h1>STRAIN CALIBRATION</h1>
