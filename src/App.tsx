@@ -21,11 +21,19 @@ interface SmartKnobLog {
   msg: string;
 }
 
+enum Item {
+  LOG = "LOG",
+  MOTOR_CALIBRATION = "MOTOR_CALIBRATION",
+  STRAIN_CALIBRATION = "STRAIN_CALIBRATION",
+}
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  const [macAddress, setMacAddress] = useState<string | null>(null);
-  const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | null>(null);
+  const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | undefined>(
+    undefined,
+  );
+  const [knob, setKnob] = useState<PB.Knob | undefined>(undefined);
   const [connectionState, setConnectionState] = useState(false);
   const [smartKnobState, setSmartKnobState] = useState<
     NoUndefinedField<PB.ISmartKnobState>
@@ -37,6 +45,9 @@ function App() {
       },
     ) as NoUndefinedField<PB.ISmartKnobState>,
   );
+  const [strainCalibState, setStrainCalibState] = useState<
+    PB.StrainCalibState | undefined
+  >(undefined);
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
   const [log, setLog] = useState<Array<SmartKnobLog>>([]);
   const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
@@ -46,6 +57,10 @@ function App() {
   const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
   const [verboseLogging, setVerboseLogging] = useState(false);
   const [originLogging, setOriginLogging] = useState(true);
+  const [logOpen, setLogOpen] = useState<boolean>(false);
+  const [motorCalibOpen, setMotorCalibOpen] = useState<boolean>(false);
+  const [strainCalibOpen, setStrainCalibOpen] = useState<boolean>(false);
+
   const logRef = useRef<HTMLOListElement>(null);
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
@@ -75,7 +90,7 @@ function App() {
         connectToSmartKnob(serialPort);
       } else {
         console.error("Web Serial API is not supported in this browser.");
-        setSmartKnob(null);
+        setSmartKnob(undefined);
         setConnectionState(false);
       }
     } catch (error) {
@@ -87,8 +102,19 @@ function App() {
   const onMessage = (message: PB.FromSmartKnob) => {
     if (message.payload === "knob" && message.knob !== null) {
       const knob = PB.Knob.create(message.knob);
-      setMacAddress(knob.macAddress);
+      setKnob(knob);
+      console.log(knob.persistentConfig?.strainScale);
+
       setConnectionState(true);
+    }
+
+    if (
+      message.payload === "strainCalibState" &&
+      message.strainCalibState !== null
+    ) {
+      const state = PB.StrainCalibState.create(message.strainCalibState);
+      setStrainCalibState(state);
+      console.log(state);
     }
 
     if (
@@ -142,6 +168,20 @@ function App() {
     document.body.classList.toggle("dark");
   };
 
+  const strainCalibStep = () => {
+    if (strainCalibState === undefined)
+      return <p>Press to start calibration.</p>;
+
+    switch (strainCalibState.step) {
+      case 1:
+        return <p>Press again to capture idle value.</p>;
+      case 2:
+        return <p>Press at desired calibrated "pressure".</p>;
+      default:
+        return <p>Press to start calibration.</p>;
+    }
+  };
+
   useEffect(() => {
     if (localStorage.getItem("darkMode") === "true") {
       setDarkMode(true);
@@ -188,18 +228,18 @@ function App() {
               onClick={connectToSerial}
               disabled={connectionState}
             >
-              {connectionState ? <>{macAddress}</> : <>CONNECT</>}
+              {connectionState ? <>{knob?.macAddress}</> : <>CONNECT</>}
             </button>
-            <div className="item-container log">
-              <header>
+            <div className={`item-container log ${logOpen ? "active" : ""}`}>
+              <header onClick={() => setLogOpen(!logOpen)}>
                 <div>
                   {" "}
                   <h3>[1]</h3>
                   <h1>LOGS</h1>
                 </div>
-                <span className="mr-4 -rotate-90">&lt;</span>
+                <span>{logOpen ? ">" : "<"}</span>
               </header>
-              <div className="log-container">
+              <div className="item-inner-container log-container">
                 <div className="log-header">
                   <div className="log-levels">
                     <button
@@ -330,23 +370,63 @@ function App() {
                 </div>
               </div>
             </div>
-            <div className="item-container">
-              <header>
+            <div
+              className={`item-container relative ${motorCalibOpen ? "active" : ""}`}
+            >
+              <header onClick={() => setMotorCalibOpen(!motorCalibOpen)}>
                 <div>
                   <h3>[2]</h3>
                   <h1>MOTOR CALIBRATION</h1>
                 </div>
-                <span>-</span>
+                <span>{motorCalibOpen ? ">" : "<"}</span>
+                <p className="absolute left-2 top-1 text-xs">
+                  {knob?.persistentConfig?.motor?.calibrated
+                    ? "CALIBRATED"
+                    : "NOT CALIBRATED"}
+                </p>
               </header>
+              <div className="item-inner-container">
+                <button
+                  className="btn"
+                  onClick={() =>
+                    smartKnob?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
+                  }
+                >
+                  Press to start motor calibration.
+                </button>
+              </div>
             </div>
-            <div className="item-container">
-              <header>
+            <div
+              className={`item-container relative ${strainCalibOpen ? "active" : ""}`}
+            >
+              <header onClick={() => setStrainCalibOpen(!strainCalibOpen)}>
                 <div>
                   <h3>[3]</h3>
                   <h1>STRAIN CALIBRATION</h1>
                 </div>
-                <span>-</span>
+                <span>{strainCalibOpen ? ">" : "<"}</span>
+                <p className="absolute left-2 top-1 text-xs">
+                  {knob?.persistentConfig?.strainScale != 1.0 &&
+                  knob?.persistentConfig?.strainScale != 0 &&
+                  knob?.persistentConfig?.strainScale != null
+                    ? "CALIBRATED"
+                    : "NOT CALIBRATED"}
+                </p>
               </header>
+              <div className="item-inner-container">
+                <button
+                  className="btn"
+                  onClick={() =>
+                    smartKnob?.sendCommand(PB.SmartKnobCommand.STRAIN_CALIBRATE)
+                  }
+                >
+                  {strainCalibStep()}
+                </button>
+                <div>
+                  <p>{strainCalibState?.step}</p>
+                  <p>{strainCalibState?.strainScale}</p>
+                </div>
+              </div>
             </div>
           </>
         ) : (

@@ -52,8 +52,14 @@
   padding: 0;
   @apply border-[0.2rem] border-skdk;
 
+  &.active {
+    .item-inner-container {
+      display: flex;
+    }
+  }
+
   header {
-    @apply m-3 flex items-center justify-between #{!important};
+    @apply m-3 flex cursor-pointer items-center justify-between #{!important};
     div {
       @apply flex gap-1;
       h1 {
@@ -64,8 +70,12 @@
       }
     }
     span {
-      @apply font-74MR text-4xl sm:text-7xl;
+      @apply font-74MR mr-4 -rotate-90 text-4xl sm:text-7xl;
     }
+  }
+
+  .item-inner-container {
+    display: none;
   }
 
   @screen md {
@@ -102,7 +112,7 @@
 .log-console {
   @apply mx-3 h-96 flex-col  overflow-hidden  overflow-x-auto bg-secondary p-4 text-xs sm:px-8 dark:bg-skdk;
   ol {
-    @apply h-full min-w-fit  overflow-y-scroll pb-3 pr-3;
+    @apply h-full min-w-fit  overflow-y-auto pb-3 pr-3;
     &::-webkit-scrollbar {
       @apply w-3 rounded-lg bg-primary;
     }
