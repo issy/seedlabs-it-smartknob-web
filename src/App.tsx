@@ -38,9 +38,6 @@ function App() {
   const [log, setLog] = useState<Array<SmartKnobLog>>([]);
 
   const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
-  const [logOpen, setLogOpen] = useState<boolean>(false);
-  const [motorCalibOpen, setMotorCalibOpen] = useState<boolean>(false);
-  const [strainCalibOpen, setStrainCalibOpen] = useState<boolean>(false);
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
     try {
@@ -65,6 +62,7 @@ function App() {
         serialPort.addEventListener("disconnect", async () => {
           setConnectionState(false);
           console.log("Device disconnected");
+          alert("Device disconnected");
         });
         connectToSmartKnob(serialPort);
       } else {
@@ -146,18 +144,6 @@ function App() {
       setDarkMode(true);
       document.body.classList.add("dark");
     }
-
-    if (localStorage.getItem("logOpen") !== null) {
-      setLogOpen(localStorage.getItem("logOpen") === "true");
-    }
-
-    if (localStorage.getItem("motorCalibOpen") !== null) {
-      setMotorCalibOpen(localStorage.getItem("motorCalibOpen") === "true");
-    }
-
-    if (localStorage.getItem("strainCalibOpen") !== null) {
-      setStrainCalibOpen(localStorage.getItem("strainCalibOpen") === "true");
-    }
   }, []);
 
   // useEffect(() => {
@@ -190,16 +176,20 @@ function App() {
           <h1>SMARTKNOB DEV KIT</h1>
           <h3>Configuration and Debugging console</h3>
         </div>
-        {/* {navigator.serial ? ( */}
-        {true ? (
-          <>
-            <button
-              className="connect-btn"
-              onClick={connectToSerial}
-              disabled={connectionState}
-            >
-              {connectionState ? <>{knob?.macAddress}</> : <>CONNECT</>}
-            </button>
+        {navigator.serial ? (
+          <button
+            className="connect-btn"
+            onClick={connectToSerial}
+            disabled={connectionState}
+          >
+            {connectionState ? <>{knob?.macAddress}</> : <>CONNECT</>}
+          </button>
+        ) : null}
+        {navigator.serial ? (
+          <div
+            id="skdk-inner-container"
+            className={`${connectionState ? "" : "disabled"}`}
+          >
             <LogDashItem log={log} fullLog={fullLog} />
             <DashItem
               title="MOTOR CALIBRATION"
@@ -256,7 +246,7 @@ function App() {
                 <p>{strainCalibState?.strainScale}</p>
               </div>
             </DashItem>
-          </>
+          </div>
         ) : (
           "Web Serial API is not supported in this browser."
         )}

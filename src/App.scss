@@ -13,6 +13,20 @@
   @screen sm {
     padding: 4rem;
   }
+
+  #skdk-inner-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 4rem;
+
+    &.disabled {
+      opacity: 0.5;
+      * {
+        cursor: not-allowed !important;
+      }
+    }
+  }
 }
 
 .color-mode-toggle {
