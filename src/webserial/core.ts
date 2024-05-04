@@ -56,6 +56,14 @@ export class SmartKnobCore {
     );
   }
 
+  public sendStrainCalibration(calibration: PB.StrainCalibration): void {
+    this.enqueueMessage(
+      PB.ToSmartknob.create({
+        strainCalibration: calibration,
+      }),
+    );
+  }
+
   public sendCommand(command: PB.SmartKnobCommand): void {
     this.enqueueMessage(
       PB.ToSmartknob.create({

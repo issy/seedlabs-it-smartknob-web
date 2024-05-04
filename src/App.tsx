@@ -2,16 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import "./App.scss";
 import { PB } from "./proto/dist/protos";
 import { SmartKnobWebSerial } from "./webserial";
-import { exhaustiveCheck, findNClosest, lerp, NoUndefinedField } from "./util";
-import {
-  IconChevronCompactDown,
-  IconChevronDown,
-  IconChevronUp,
-  IconMoon,
-  IconSun,
-} from "@tabler/icons-react";
-import { MessageCallback } from "./webserial/core";
+import { NoUndefinedField } from "./util";
+import { IconMoon, IconSun } from "@tabler/icons-react";
 import seedlabsLogo from "./assets/logoFull_white_transparent.webp";
+import DashItem from "./components/DashItem";
+import LogDashItem from "./components/LogDashItem";
 
 interface SmartKnobLog {
   timestamp: number;
@@ -35,33 +30,17 @@ function App() {
   );
   const [knob, setKnob] = useState<PB.Knob | undefined>(undefined);
   const [connectionState, setConnectionState] = useState(false);
-  const [smartKnobState, setSmartKnobState] = useState<
-    NoUndefinedField<PB.ISmartKnobState>
-  >(
-    PB.SmartKnobState.toObject(
-      PB.SmartKnobState.create({ config: PB.SmartKnobConfig.create() }),
-      {
-        defaults: true,
-      },
-    ) as NoUndefinedField<PB.ISmartKnobState>,
-  );
+  const [calibrationWeight, setCalibrationWeight] = useState<number>(272);
   const [strainCalibState, setStrainCalibState] = useState<
     PB.StrainCalibState | undefined
   >(undefined);
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
   const [log, setLog] = useState<Array<SmartKnobLog>>([]);
-  const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
-    new Set([PB.LogLevel.INFO, PB.LogLevel.WARNING, PB.LogLevel.ERROR]),
-  );
 
   const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
-  const [verboseLogging, setVerboseLogging] = useState(false);
-  const [originLogging, setOriginLogging] = useState(true);
   const [logOpen, setLogOpen] = useState<boolean>(false);
   const [motorCalibOpen, setMotorCalibOpen] = useState<boolean>(false);
   const [strainCalibOpen, setStrainCalibOpen] = useState<boolean>(false);
-
-  const logRef = useRef<HTMLOListElement>(null);
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
     try {
@@ -100,11 +79,12 @@ function App() {
   };
 
   const onMessage = (message: PB.FromSmartKnob) => {
+    if (message.payload != "log" && message.payload != "smartknobState")
+      console.log(message);
+
     if (message.payload === "knob" && message.knob !== null) {
       const knob = PB.Knob.create(message.knob);
       setKnob(knob);
-      console.log(knob.persistentConfig?.strainScale);
-
       setConnectionState(true);
     }
 
@@ -114,19 +94,17 @@ function App() {
     ) {
       const state = PB.StrainCalibState.create(message.strainCalibState);
       setStrainCalibState(state);
-      console.log(state);
     }
 
-    if (
-      message.payload === "smartknobState" &&
-      message.smartknobState !== null
-    ) {
-      const state = PB.SmartKnobState.create(message.smartknobState);
-      const stateObj = PB.SmartKnobState.toObject(state, {
-        defaults: true,
-      }) as NoUndefinedField<PB.ISmartKnobState>;
-      setSmartKnobState(stateObj);
-    }
+    // if (
+    //   message.payload === "smartknobState" &&
+    //   message.smartknobState !== null
+    // ) {
+    //   const state = PB.SmartKnobState.create(message.smartknobState);
+    //   const stateObj = PB.SmartKnobState.toObject(state, {
+    //     defaults: true,
+    //   }) as NoUndefinedField<PB.ISmartKnobState>;
+    // }
 
     if (message.payload === "log" && message.log !== null) {
       // console.log('LOG from smartknob', message.log?.msg);
@@ -141,25 +119,6 @@ function App() {
       };
       setNewLogMessage(log);
     }
-  };
-
-  const toggleLogLevel = (logLevel: PB.LogLevel) => {
-    if (selectedLogLevels.has(logLevel)) {
-      selectedLogLevels.delete(logLevel);
-    } else setSelectedLogLevels(selectedLogLevels.add(logLevel));
-    localStorage.setItem(
-      "logLevels",
-      JSON.stringify(Array.from(selectedLogLevels)),
-    );
-    setSelectedLogLevels(new Set([...selectedLogLevels]));
-  };
-
-  const toggleVerboseLogging = () => {
-    setVerboseLogging(!verboseLogging);
-  };
-
-  const toggleOriginLogging = () => {
-    setOriginLogging(!originLogging);
   };
 
   const toggleDarkMode = () => {
@@ -188,13 +147,6 @@ function App() {
       document.body.classList.add("dark");
     }
 
-    if (localStorage.getItem("logLevels") !== null) {
-      const storedLogLevels = new Set<PB.LogLevel>(
-        JSON.parse(localStorage.getItem("logLevels")!),
-      );
-      setSelectedLogLevels(storedLogLevels);
-    }
-
     if (localStorage.getItem("logOpen") !== null) {
       setLogOpen(localStorage.getItem("logOpen") === "true");
     }
@@ -208,15 +160,21 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    logRef.current?.lastElementChild?.scrollIntoView();
-  }, [log]);
+  // useEffect(() => {
+  //   // logRef.current?.lastElementChild?.scrollIntoView();
+  // }, [log]);
 
   useEffect(() => {
     if (newLogMessage == null) return;
     setFullLog([...fullLog, newLogMessage]);
 
-    if (selectedLogLevels.has(newLogMessage.level)) {
+    const storedLogLevels = new Set<PB.LogLevel>(
+      JSON.parse(localStorage.getItem("logLevels")!),
+    );
+
+    const verboseLogging = localStorage.getItem("verboseLogging") === "true";
+
+    if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
       setLog([...log, newLogMessage]);
     }
@@ -242,225 +200,62 @@ function App() {
             >
               {connectionState ? <>{knob?.macAddress}</> : <>CONNECT</>}
             </button>
-            <div className={`item-container log ${logOpen ? "active" : ""}`}>
-              <header
-                onClick={() => {
-                  localStorage.setItem("logOpen", (!logOpen).toString());
-                  setLogOpen(!logOpen);
-                }}
-              >
-                <div>
-                  {" "}
-                  <h3>[1]</h3>
-                  <h1>LOGS</h1>
-                </div>
-                <span>{logOpen ? ">" : "<"}</span>
-              </header>
-              <div className="item-inner-container log-container">
-                <div className="log-header">
-                  <div className="log-levels">
-                    <button
-                      className={
-                        selectedLogLevels.has(PB.LogLevel.INFO) ? "active" : ""
-                      }
-                      onClick={() => toggleLogLevel(PB.LogLevel.INFO)}
-                    >
-                      <div className="log-color-indicator  bg-log-info"></div>
-                      INFO
-                    </button>
-                    <button
-                      className={
-                        selectedLogLevels.has(PB.LogLevel.DEBUG) ? "active" : ""
-                      }
-                      onClick={() => toggleLogLevel(PB.LogLevel.DEBUG)}
-                    >
-                      <div className="log-color-indicator bg-log-debug"></div>
-                      DEBUG
-                    </button>
-                    <button
-                      className={
-                        selectedLogLevels.has(PB.LogLevel.WARNING)
-                          ? "active"
-                          : ""
-                      }
-                      onClick={() => toggleLogLevel(PB.LogLevel.WARNING)}
-                    >
-                      <div className="log-color-indicator bg-log-warning"></div>
-                      WARNING
-                    </button>
-                    <button
-                      className={
-                        selectedLogLevels.has(PB.LogLevel.ERROR) ? "active" : ""
-                      }
-                      onClick={() => toggleLogLevel(PB.LogLevel.ERROR)}
-                    >
-                      <div className="log-color-indicator bg-log-error"></div>
-                      ERROR
-                    </button>
-                  </div>
-                  <div className="log-toggles">
-                    <button
-                      className={verboseLogging ? "active" : ""}
-                      onClick={toggleVerboseLogging}
-                    >
-                      TOGGLE VERBOSE
-                    </button>
-                    <button
-                      className={originLogging ? "active" : ""}
-                      onClick={toggleOriginLogging}
-                    >
-                      TOGGLE ORIGIN
-                    </button>
-                  </div>
-                </div>
-                <div className="log-console">
-                  <ol ref={logRef}>
-                    {log.map((msg, index) => {
-                      if (log.length > 100) {
-                        // Only display last 100 array items
-                        log.shift();
-                      }
-                      const date = new Date(msg.timestamp);
-                      const hours = String(date.getHours()).padStart(2, "0");
-                      const minutes = String(date.getMinutes()).padStart(
-                        2,
-                        "0",
-                      );
-                      const seconds = String(date.getSeconds()).padStart(
-                        2,
-                        "0",
-                      );
-                      const timeString = `${hours}:${minutes}:${seconds}`;
-
-                      var logLevelString = "";
-
-                      switch (msg.level) {
-                        case PB.LogLevel.INFO:
-                          logLevelString = "INFO";
-                          break;
-                        case PB.LogLevel.DEBUG:
-                          logLevelString = "DEBUG";
-                          break;
-                        case PB.LogLevel.WARNING:
-                          logLevelString = "WARNING";
-                          break;
-                        case PB.LogLevel.ERROR:
-                          logLevelString = "ERROR";
-                          break;
-
-                        default:
-                          logLevelString = "UNKNOWN";
-                          break;
-                      }
-
-                      if (msg.origin.length > 40) {
-                        msg.origin = `...${msg.origin.slice(
-                          msg.origin.lastIndexOf("/", 40),
-                        )}`;
-                      }
-
-                      return (
-                        <li key={index}>
-                          <div>
-                            <div
-                              className={`log-color-indicator  bg-log-${logLevelString.toLowerCase()}`}
-                            ></div>
-                            <p className="log-console-time">{timeString}</p>
-                            <p className="log-console-msg">{msg.msg}</p>
-                          </div>
-                          {originLogging && msg.origin && (
-                            <p className="log-console-origin">{msg.origin}</p>
-                          )}
-                        </li>
-                      );
-                    }, [])}
-                  </ol>
-                </div>
-                <div className="mb-3 mr-3 flex justify-end">
-                  <button className="btn">DOWNLOAD</button>
-                </div>
-              </div>
-            </div>
-            <div
-              className={`item-container relative ${motorCalibOpen ? "active" : ""}`}
+            <LogDashItem log={log} fullLog={fullLog} />
+            <DashItem
+              title="MOTOR CALIBRATION"
+              index={2}
+              status={
+                knob?.persistentConfig?.motor?.calibrated
+                  ? "CALIBRATED"
+                  : "NOT CALIBRATED"
+              }
             >
-              <header
-                onClick={() => {
-                  localStorage.setItem(
-                    "motorCalibOpen",
-                    (!motorCalibOpen).toString(),
-                  );
-                  setMotorCalibOpen(!motorCalibOpen);
-                }}
+              <button
+                className="btn"
+                onClick={() =>
+                  smartKnob?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
+                }
               >
-                <div>
-                  <h3>[2]</h3>
-                  <h1>MOTOR CALIBRATION</h1>
-                </div>
-                <span>{motorCalibOpen ? ">" : "<"}</span>
-                <p className="absolute left-2 top-1 text-xs">
-                  {knob?.persistentConfig?.motor?.calibrated
-                    ? "CALIBRATED"
-                    : "NOT CALIBRATED"}
-                </p>
-              </header>
-              <div className="item-inner-container">
-                <button
-                  className="btn"
-                  onClick={() =>
-                    smartKnob?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
-                  }
-                >
-                  Press to start motor calibration.
-                </button>
-              </div>
-            </div>
-            <div
-              className={`item-container relative ${strainCalibOpen ? "active" : ""}`}
+                Press to start motor calibration.
+              </button>
+            </DashItem>
+            <DashItem
+              title="STRAIN CALIBRATION"
+              index={3}
+              status={
+                knob?.persistentConfig?.strainScale != 1.0 &&
+                knob?.persistentConfig?.strainScale != 0 &&
+                knob?.persistentConfig?.strainScale != null
+                  ? "CALIBRATED"
+                  : "NOT CALIBRATED"
+              }
             >
-              <header
-                onClick={() => {
-                  localStorage.setItem(
-                    "strainCalibOpen",
-                    (!strainCalibOpen).toString(),
-                  );
-                  setStrainCalibOpen(!strainCalibOpen);
-                }}
+              <input
+                type="text"
+                value={calibrationWeight}
+                placeholder="Calibration Weight in grams. (100g)"
+              />
+              <button
+                className="btn"
+                onClick={() =>
+                  knob?.persistentConfig?.motor?.calibrated
+                    ? smartKnob?.sendStrainCalibration(
+                        PB.StrainCalibration.create({
+                          calibrationWeight: 100,
+                        }),
+                      )
+                    : alert(
+                        "Motor not calibrated! Please calibrate motor first.",
+                      )
+                }
               >
-                <div>
-                  <h3>[3]</h3>
-                  <h1>STRAIN CALIBRATION</h1>
-                </div>
-                <span>{strainCalibOpen ? ">" : "<"}</span>
-                <p className="absolute left-2 top-1 text-xs">
-                  {knob?.persistentConfig?.strainScale != 1.0 &&
-                  knob?.persistentConfig?.strainScale != 0 &&
-                  knob?.persistentConfig?.strainScale != null
-                    ? "CALIBRATED"
-                    : "NOT CALIBRATED"}
-                </p>
-              </header>
-              <div className="item-inner-container">
-                <button
-                  className="btn"
-                  onClick={() =>
-                    knob?.persistentConfig?.motor?.calibrated
-                      ? smartKnob?.sendCommand(
-                          PB.SmartKnobCommand.STRAIN_CALIBRATE,
-                        )
-                      : alert(
-                          "Motor not calibrated! Please calibrate motor first.",
-                        )
-                  }
-                >
-                  {strainCalibStep()}
-                </button>
-                <div>
-                  <p>{strainCalibState?.step}</p>
-                  <p>{strainCalibState?.strainScale}</p>
-                </div>
+                {strainCalibStep()}
+              </button>
+              <div>
+                <p>{strainCalibState?.step}</p>
+                <p>{strainCalibState?.strainScale}</p>
               </div>
-            </div>
+            </DashItem>
           </>
         ) : (
           "Web Serial API is not supported in this browser."

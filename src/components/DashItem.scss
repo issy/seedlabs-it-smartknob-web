@@ -1,0 +1,38 @@
+.item_container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  @apply border-[0.2rem] border-skdk;
+
+  &.active {
+    .item_inner_container {
+      display: flex;
+    }
+  }
+
+  header {
+    @apply flex cursor-pointer select-none items-center justify-between p-3 #{!important};
+    @screen md {
+      @apply p-6 #{!important};
+    }
+    div {
+      @apply flex gap-1;
+      h1 {
+        @apply font-82XC text-3xl sm:text-6xl;
+      }
+      h3 {
+        @apply font-82ND text-sm sm:text-2xl;
+      }
+    }
+    span {
+      @apply font-74MR mr-4 -rotate-90 text-4xl sm:text-7xl;
+    }
+  }
+
+  .item_inner_container {
+    display: none;
+  }
+}
