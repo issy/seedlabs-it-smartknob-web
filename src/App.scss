@@ -24,6 +24,9 @@
       opacity: 0.5;
       * {
         cursor: not-allowed !important;
+        header {
+          pointer-events: none;
+        }
       }
     }
   }

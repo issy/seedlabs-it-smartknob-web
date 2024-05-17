@@ -131,7 +131,7 @@ function App() {
 
     switch (strainCalibState.step) {
       case 1:
-        return <p>Press again to capture idle value.</p>;
+        return <p>Press when calibration weight is placed ontop of knob.</p>;
       case 2:
         return <p>Press at desired calibrated "pressure".</p>;
       default:
@@ -220,30 +220,36 @@ function App() {
                   : "NOT CALIBRATED"
               }
             >
+              {/* <label>Calibration Weight</label>
               <input
-                type="text"
+                type="number"
                 value={calibrationWeight}
-                placeholder="Calibration Weight in grams. (100g)"
-              />
-              <button
-                className="btn"
-                onClick={() =>
-                  knob?.persistentConfig?.motor?.calibrated
-                    ? smartKnob?.sendStrainCalibration(
-                        PB.StrainCalibration.create({
-                          calibrationWeight: 100,
-                        }),
-                      )
-                    : alert(
-                        "Motor not calibrated! Please calibrate motor first.",
-                      )
+                onChange={(e) =>
+                  setCalibrationWeight(parseFloat(e.target.value))
                 }
-              >
-                {strainCalibStep()}
-              </button>
-              <div>
-                <p>{strainCalibState?.step}</p>
-                <p>{strainCalibState?.strainScale}</p>
+                title="Calibration weight in grams. Default is 272g."
+                className="focus:ring-skdk-500 w-full rounded-md border border-skdk bg-primary p-2 text-black shadow-sm focus:border-transparent focus:outline-none focus:ring-2 sm:text-sm"
+              /> */}
+              <div className="">
+                <div className="border-2 border-slate-700">
+                  <p className="font-82XC text-[256px]">1</p>
+                </div>
+                <button
+                  className="btn"
+                  onClick={() =>
+                    knob?.persistentConfig?.motor?.calibrated
+                      ? smartKnob?.sendStrainCalibration(
+                          PB.StrainCalibration.create({
+                            calibrationWeight,
+                          }),
+                        )
+                      : alert(
+                          "Motor not calibrated! Please calibrate motor first.",
+                        )
+                  }
+                >
+                  {strainCalibStep()}
+                </button>
               </div>
             </DashItem>
           </div>
