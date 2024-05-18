@@ -3,14 +3,13 @@ import DashItem from "./DashItem";
 import { PB } from "../proto/dist/protos";
 import "./LogDashItem.scss";
 import { SmartKnobLog } from "../types";
+import { useSmartKnobStore } from "../stores/smartKnobStore";
 
-interface LogDashItemProps {
-  log: SmartKnobLog[];
-  fullLog: SmartKnobLog[];
-}
+interface LogDashItemProps {}
 
-const LogDashItem: React.FC<LogDashItemProps> = ({ log, fullLog }) => {
-  // const [log_, setLog] = useState<SmartKnobLog[]>([]);
+const LogDashItem: React.FC<LogDashItemProps> = () => {
+  const { log, fullLog } = useSmartKnobStore();
+
   const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
     new Set([PB.LogLevel.INFO, PB.LogLevel.WARNING, PB.LogLevel.ERROR]),
   );
@@ -133,26 +132,7 @@ const LogDashItem: React.FC<LogDashItemProps> = ({ log, fullLog }) => {
             const seconds = String(date.getSeconds()).padStart(2, "0");
             const timeString = `${hours}:${minutes}:${seconds}`;
 
-            var logLevelString = "";
-
-            switch (msg.level) {
-              case PB.LogLevel.INFO:
-                logLevelString = "INFO";
-                break;
-              case PB.LogLevel.DEBUG:
-                logLevelString = "DEBUG";
-                break;
-              case PB.LogLevel.WARNING:
-                logLevelString = "WARNING";
-                break;
-              case PB.LogLevel.ERROR:
-                logLevelString = "ERROR";
-                break;
-
-              default:
-                logLevelString = "UNKNOWN";
-                break;
-            }
+            var logLevelString = getLogLevelString(msg.level);
 
             if (msg.origin.length > 40) {
               msg.origin = `...${msg.origin.slice(
@@ -180,16 +160,55 @@ const LogDashItem: React.FC<LogDashItemProps> = ({ log, fullLog }) => {
       <div className="mb-3 mr-3 flex justify-end">
         <button
           className="btn"
-          onClick={() =>
-            // smartKnob?.sendCommand(PB.SmartKnobCommand.GET_KNOB_INFO)
-            console.log("DOWNLOAD")
-          }
+          onClick={() => {
+            const element = document.createElement("a");
+            const formattedLog = fullLog.map((msg) => {
+              const date = new Date(msg.timestamp);
+              const hours = String(date.getHours()).padStart(2, "0");
+              const minutes = String(date.getMinutes()).padStart(2, "0");
+              const seconds = String(date.getSeconds()).padStart(2, "0");
+              const timeString = `${hours}:${minutes}:${seconds}`;
+              let logString = `${timeString} [${getLogLevelString(msg.level)}] ${msg.msg}`;
+              if (msg.origin && originLogging) {
+                if (msg.origin.length > 40) {
+                  msg.origin = `...${msg.origin.slice(
+                    msg.origin.lastIndexOf("/", 40),
+                  )}`;
+                }
+                logString += ` [${msg.origin}]`;
+              }
+              return logString;
+            });
+            const file = new Blob([formattedLog.join("\n")], {
+              type: "text/plain",
+            });
+            element.href = URL.createObjectURL(file);
+            element.download = "log.txt";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+          }}
         >
           DOWNLOAD
         </button>
       </div>
     </DashItem>
   );
+};
+
+const getLogLevelString = (logLevel: PB.LogLevel) => {
+  switch (logLevel) {
+    case PB.LogLevel.INFO:
+      return "INFO";
+    case PB.LogLevel.DEBUG:
+      return "DEBUG";
+    case PB.LogLevel.WARNING:
+      return "WARNING";
+    case PB.LogLevel.ERROR:
+      return "ERROR";
+    default:
+      return "INFO";
+  }
 };
 
 export default LogDashItem;

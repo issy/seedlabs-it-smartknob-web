@@ -171,7 +171,7 @@ function App() {
             id="skdk-inner-container"
             className={`${connectionState ? "" : "disabled"}`}
           >
-            <LogDashItem log={log} fullLog={fullLog} />
+            <LogDashItem />
             <DashItem
               title="MOTOR CALIBRATION"
               index={2}
