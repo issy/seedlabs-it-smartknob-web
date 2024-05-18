@@ -31,9 +31,9 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
           {step}
         </p>
         <img src={image} alt="" className="select-none" />
-        <p className="font-44ND pb-2 pt-4 text-center text-3xl leading-6 text-black">
+        <div className="font-44ND pb-2 pt-4 text-center text-3xl leading-6 text-black">
           {stepHTML}
-        </p>
+        </div>
       </div>
       <button
         className={`btn ${!active && "btn-disabled pointer-events-none"}`}
