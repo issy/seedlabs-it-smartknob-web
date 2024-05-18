@@ -36,6 +36,15 @@
     font-family: "74MR";
   }
 
+  @font-face {
+    font-family: "44ND";
+    src: url("./assets/fonts/futr/44nd.otf");
+  }
+
+  .font-44ND {
+    font-family: "44ND";
+  }
+
   h1 {
     @apply text-5xl;
   }
@@ -51,4 +60,7 @@ body {
 
 .btn {
   @apply bg-skdk px-4 py-2 text-primary;
+  &.btn-disabled {
+    @apply cursor-not-allowed bg-gray-400 text-gray-500;
+  }
 }

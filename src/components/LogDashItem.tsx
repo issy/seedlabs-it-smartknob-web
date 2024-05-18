@@ -2,14 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import DashItem from "./DashItem";
 import { PB } from "../proto/dist/protos";
 import "./LogDashItem.scss";
-
-interface SmartKnobLog {
-  timestamp: number;
-  isVerbose: boolean;
-  level: PB.LogLevel;
-  origin: string;
-  msg: string;
-}
+import { SmartKnobLog } from "../types";
 
 interface LogDashItemProps {
   log: SmartKnobLog[];
@@ -58,8 +51,8 @@ const LogDashItem: React.FC<LogDashItemProps> = ({ log, fullLog }) => {
 
   useEffect(() => {
     if (consoleRef.current === null) return;
-    console.log(consoleRef.current.scrollHeight);
-    console.log(consoleRef.current.scrollTop + consoleRef.current.clientHeight);
+    // console.log(consoleRef.current.scrollHeight);
+    // console.log(consoleRef.current.scrollTop + consoleRef.current.clientHeight);
 
     if (logInFocus)
       if (

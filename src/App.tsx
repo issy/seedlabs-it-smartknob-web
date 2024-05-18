@@ -1,49 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.scss";
 import { PB } from "./proto/dist/protos";
 import { SmartKnobWebSerial } from "./webserial";
-import { NoUndefinedField } from "./util";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import seedlabsLogo from "./assets/logoFull_white_transparent.webp";
 import DashItem from "./components/DashItem";
 import LogDashItem from "./components/LogDashItem";
-
-interface SmartKnobLog {
-  timestamp: number;
-  isVerbose: boolean;
-  level: PB.LogLevel;
-  origin: string;
-  msg: string;
-}
-
-enum Item {
-  LOG = "LOG",
-  MOTOR_CALIBRATION = "MOTOR_CALIBRATION",
-  STRAIN_CALIBRATION = "STRAIN_CALIBRATION",
-}
+import StrainCalib from "./components/StrainCalibration/StrainCalib";
+import { SmartKnobLog } from "./types";
+import { useSmartKnobStore } from "./stores/smartKnobStore";
+import { useStore } from "zustand";
 
 function App() {
+  const { knob, serial, state, log, fullLog } = useSmartKnobStore();
+
   const [darkMode, setDarkMode] = useState(false);
 
-  const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | undefined>(
-    undefined,
-  );
-  const [knob, setKnob] = useState<PB.Knob | undefined>(undefined);
+  // const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | undefined>(
+  //   undefined,
+  // );
+  // const [knob, setKnob] = useState<PB.Knob | undefined>(undefined);
   const [connectionState, setConnectionState] = useState(false);
   const [calibrationWeight, setCalibrationWeight] = useState<number>(272);
   const [strainCalibState, setStrainCalibState] = useState<
     PB.StrainCalibState | undefined
   >(undefined);
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
-  const [log, setLog] = useState<Array<SmartKnobLog>>([]);
+  // const [log, setLog] = useState<Array<SmartKnobLog>>([]);
 
-  const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
+  // const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
     try {
       // var smartKnob = null;
       const smartKnob_ = new SmartKnobWebSerial(serialPort, onMessage);
-      setSmartKnob(smartKnob_);
+      // setSmartKnob(smartKnob_);
+      useSmartKnobStore.setState({ serial: smartKnob_ });
       if (smartKnob_ !== null) {
         await smartKnob_.openAndLoop();
       }
@@ -67,7 +59,8 @@ function App() {
         connectToSmartKnob(serialPort);
       } else {
         console.error("Web Serial API is not supported in this browser.");
-        setSmartKnob(undefined);
+        // setSmartKnob(undefined);
+        useSmartKnobStore.setState({ serial: undefined });
         setConnectionState(false);
       }
     } catch (error) {
@@ -81,8 +74,8 @@ function App() {
       console.log(message);
 
     if (message.payload === "knob" && message.knob !== null) {
-      const knob = PB.Knob.create(message.knob);
-      setKnob(knob);
+      const knob_ = PB.Knob.create(message.knob);
+      useSmartKnobStore.setState({ knob: knob_ });
       setConnectionState(true);
     }
 
@@ -91,18 +84,10 @@ function App() {
       message.strainCalibState !== null
     ) {
       const state = PB.StrainCalibState.create(message.strainCalibState);
+      console.log(state);
+
       setStrainCalibState(state);
     }
-
-    // if (
-    //   message.payload === "smartknobState" &&
-    //   message.smartknobState !== null
-    // ) {
-    //   const state = PB.SmartKnobState.create(message.smartknobState);
-    //   const stateObj = PB.SmartKnobState.toObject(state, {
-    //     defaults: true,
-    //   }) as NoUndefinedField<PB.ISmartKnobState>;
-    // }
 
     if (message.payload === "log" && message.log !== null) {
       // console.log('LOG from smartknob', message.log?.msg);
@@ -146,13 +131,9 @@ function App() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   // logRef.current?.lastElementChild?.scrollIntoView();
-  // }, [log]);
-
   useEffect(() => {
     if (newLogMessage == null) return;
-    setFullLog([...fullLog, newLogMessage]);
+    useSmartKnobStore.setState({ fullLog: [...fullLog, newLogMessage] });
 
     const storedLogLevels = new Set<PB.LogLevel>(
       JSON.parse(localStorage.getItem("logLevels")!),
@@ -162,7 +143,7 @@ function App() {
 
     if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
-      setLog([...log, newLogMessage]);
+      useSmartKnobStore.setState({ log: [...log, newLogMessage] });
     }
   }, [newLogMessage]);
 
@@ -203,55 +184,13 @@ function App() {
               <button
                 className="btn"
                 onClick={() =>
-                  smartKnob?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
+                  serial?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
                 }
               >
                 Press to start motor calibration.
               </button>
             </DashItem>
-            <DashItem
-              title="STRAIN CALIBRATION"
-              index={3}
-              status={
-                knob?.persistentConfig?.strainScale != 1.0 &&
-                knob?.persistentConfig?.strainScale != 0 &&
-                knob?.persistentConfig?.strainScale != null
-                  ? "CALIBRATED"
-                  : "NOT CALIBRATED"
-              }
-            >
-              {/* <label>Calibration Weight</label>
-              <input
-                type="number"
-                value={calibrationWeight}
-                onChange={(e) =>
-                  setCalibrationWeight(parseFloat(e.target.value))
-                }
-                title="Calibration weight in grams. Default is 272g."
-                className="focus:ring-skdk-500 w-full rounded-md border border-skdk bg-primary p-2 text-black shadow-sm focus:border-transparent focus:outline-none focus:ring-2 sm:text-sm"
-              /> */}
-              <div className="">
-                <div className="border-2 border-slate-700">
-                  <p className="font-82XC text-[256px]">1</p>
-                </div>
-                <button
-                  className="btn"
-                  onClick={() =>
-                    knob?.persistentConfig?.motor?.calibrated
-                      ? smartKnob?.sendStrainCalibration(
-                          PB.StrainCalibration.create({
-                            calibrationWeight,
-                          }),
-                        )
-                      : alert(
-                          "Motor not calibrated! Please calibrate motor first.",
-                        )
-                  }
-                >
-                  {strainCalibStep()}
-                </button>
-              </div>
-            </DashItem>
+            <StrainCalib />
           </div>
         ) : (
           "Web Serial API is not supported in this browser."
