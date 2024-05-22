@@ -62,7 +62,7 @@ const LogDashItem: React.FC<LogDashItemProps> = () => {
   }, [log]);
 
   return (
-    <DashItem title="LOGS" index={1}>
+    <DashItem title="LOGS" index={1} saveState={true}>
       <div className="log-header">
         <div className="log-levels">
           <button

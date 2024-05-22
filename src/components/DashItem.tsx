@@ -6,18 +6,20 @@ interface DashItemProps extends PropsWithChildren {
   title: string;
   index: number;
   status?: string;
+  saveState?: boolean;
 }
 
 const DashItem: React.FC<DashItemProps> = ({
   title,
   index,
   status,
+  saveState,
   children,
 }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(title + index) !== null) {
+    if (saveState && localStorage.getItem(title + index) !== null) {
       setOpen(localStorage.getItem(title + index) === "true");
     }
   }, []);
@@ -25,7 +27,7 @@ const DashItem: React.FC<DashItemProps> = ({
     <div className={`item_container relative ${open ? "active" : ""}`}>
       <header
         onClick={() => {
-          localStorage.setItem(title + index, (!open).toString());
+          saveState && localStorage.setItem(title + index, (!open).toString());
           setOpen(!open);
         }}
       >
