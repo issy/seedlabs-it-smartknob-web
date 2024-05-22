@@ -1,12 +1,15 @@
-import React, { PropsWithChildren } from "react";
+import { clear } from "console";
+import React, { PropsWithChildren, useEffect } from "react";
 
 interface StrainCalibItemProps extends PropsWithChildren {
   image: string;
   step: number;
   stepHTML: React.ReactNode;
-  stepBtnText: string;
+  stepBtnText?: string;
+  automatic?: boolean;
+  automaticDuration?: number;
   active: boolean;
-  nextStepCallback: () => void;
+  nextStepCallback?: () => void;
 }
 
 const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
@@ -14,11 +17,22 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
   step,
   stepHTML,
   stepBtnText,
+  automatic = false,
+  automaticDuration = 0,
   active,
   nextStepCallback,
 }) => {
-  // Implement your component logic here
+  const [countdown, setCountdown] = React.useState<number>(automaticDuration);
 
+  useEffect(() => {
+    if (automatic && active) {
+      const interval = setInterval(() => {
+        setCountdown((prev) => (prev > 0 ? prev - 1 : prev));
+      }, 1000);
+      setCountdown(automaticDuration);
+      return () => clearInterval(interval);
+    }
+  }, [active]);
   return (
     <div className="flex w-fit flex-shrink-0 select-none flex-col gap-4">
       <div
@@ -39,7 +53,7 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         className={`btn ${!active && "btn-disabled pointer-events-none"}`}
         onClick={nextStepCallback}
       >
-        {stepBtnText}
+        {(automatic && countdown + "s") || stepBtnText}
       </button>
     </div>
   );

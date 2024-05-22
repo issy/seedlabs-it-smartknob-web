@@ -72,10 +72,11 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="NEXT"
-          active={false}
+          active={log
+            .map((log) => log.msg.includes("Factory strain calibration step 1"))
+            .reduce((a, b) => a || b, false)}
         />
         <StrainCalibItem
-          nextStepCallback={nextStepCallback}
           image={removeWeightImage}
           step={3}
           stepHTML={
@@ -83,9 +84,11 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
               REMOVE THE WEIGHT <br /> &#8205;
             </p>
           }
-          stepBtnText="NEXT"
-          active={false}
-          // active={?.step === 3}
+          automatic={true}
+          automaticDuration={5}
+          active={log
+            .map((log) => log.msg.includes("Remove calibration weight."))
+            .reduce((a, b) => a || b, false)}
         />
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
@@ -97,7 +100,11 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="DONE"
-          active={false}
+          active={log
+            .map((log) =>
+              log.msg.includes("Factory strain calibration complete!"),
+            )
+            .reduce((a, b) => a || b, false)}
         />
       </div>
     </DashItem>
