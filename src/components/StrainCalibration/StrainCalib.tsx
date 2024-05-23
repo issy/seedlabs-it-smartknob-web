@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import dontTouchImage from "../../assets/DontTouchKnob.png";
 import placeWeightImage from "../../assets/PlaceWeight.png";
 import removeWeightImage from "../../assets/RemoveWeight.png";
@@ -12,6 +12,8 @@ interface StrainCalibProps extends PropsWithChildren {}
 
 const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
   const { knob, serial, log } = useSmartKnobStore();
+  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [run, setRun] = useState<number>(0);
   const nextStepCallback = () => {
     if (knob?.persistentConfig?.motor?.calibrated === false) {
       alert("Motor not calibrated! Please calibrate motor first.");
@@ -23,6 +25,51 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
       }),
     );
   };
+
+  const checkIncludes = (str: string, count: number = 1) => {
+    return (
+      log.map((log) => log.msg.includes(str)).filter((includes) => includes)
+        .length === count
+    );
+  };
+
+  useEffect(() => {
+    if (
+      checkIncludes(
+        "Place calibration weight on the knob and press 'Y' again",
+        run,
+      ) &&
+      currentStep === 0
+    ) {
+      setCurrentStep(1);
+    } else if (
+      checkIncludes("Remove calibration weight.", run) &&
+      currentStep === 1
+    ) {
+      setCurrentStep(2);
+    } else if (
+      checkIncludes("Factory strain calibration complete!", run) &&
+      currentStep === 2
+    ) {
+      setRun((prev) => prev + 1);
+      setCurrentStep(3);
+    } else if (
+      checkIncludes("Restart calibration by pressing 'Y' again.", run) &&
+      currentStep !== 0
+    ) {
+      setRun((prev) => prev + 1);
+      setCurrentStep(0);
+    }
+  }, [log]);
+
+  useEffect(() => {
+    if (run > 0) {
+      setTimeout(() => {
+        setCurrentStep(0);
+      }, 5000);
+    }
+  }, [run]);
+
   return (
     <DashItem
       title="STRAIN CALIBRATION"
@@ -56,11 +103,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="START"
-          active={
-            !log
-              .map((log) => log.msg)
-              .includes("Factory strain calibration step 2")
-          }
+          active={currentStep === 0}
         />
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
@@ -72,9 +115,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="NEXT"
-          active={log
-            .map((log) => log.msg.includes("Factory strain calibration step 1"))
-            .reduce((a, b) => a || b, false)}
+          active={currentStep === 1}
         />
         <StrainCalibItem
           image={removeWeightImage}
@@ -86,12 +127,10 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           automatic={true}
           automaticDuration={5}
-          active={log
-            .map((log) => log.msg.includes("Remove calibration weight."))
-            .reduce((a, b) => a || b, false)}
+          active={currentStep === 2}
         />
         <StrainCalibItem
-          nextStepCallback={nextStepCallback}
+          nextStepCallback={() => setCurrentStep(0)}
           image={doneImage}
           step={4}
           stepHTML={
@@ -100,11 +139,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="DONE"
-          active={log
-            .map((log) =>
-              log.msg.includes("Factory strain calibration complete!"),
-            )
-            .reduce((a, b) => a || b, false)}
+          active={currentStep === 3}
         />
       </div>
     </DashItem>
