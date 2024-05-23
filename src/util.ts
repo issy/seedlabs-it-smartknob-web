@@ -1,6 +1,6 @@
-export const exhaustiveCheck = (x: never): never => {
-  throw new Error(`Unexpected value: ${x}`, x);
-};
+// export const exhaustiveCheck = (x: never): never => {
+//   throw new Error(`Unexpected value: ${x}`, x);
+// };
 
 export const isSome = <T>(v: T | null | undefined): v is T => {
   return v !== null && v !== undefined;

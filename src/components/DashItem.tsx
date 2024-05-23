@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./DashItem.scss";
 
 interface DashItemProps extends PropsWithChildren {

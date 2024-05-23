@@ -11,7 +11,8 @@ interface SmartKnobState {
   fullLog: SmartKnobLog[];
 }
 
-export const useSmartKnobStore = create<SmartKnobState>((set) => ({
+// export const useSmartKnobStore = create<SmartKnobState>((set) => ({
+export const useSmartKnobStore = create<SmartKnobState>((_) => ({
   knob: PB.Knob.create(),
   // setKnob: (knob: PB.Knob) => set({ knob }),
 

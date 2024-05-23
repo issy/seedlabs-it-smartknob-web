@@ -1,7 +1,7 @@
-import { clear } from "console";
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithRef, useEffect } from "react";
 
-interface StrainCalibItemProps extends PropsWithChildren {
+interface StrainCalibItemProps
+  extends PropsWithRef<JSX.IntrinsicElements["div"]> {
   image: string;
   step: number;
   stepHTML: React.ReactNode;

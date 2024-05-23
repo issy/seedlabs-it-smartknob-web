@@ -9,26 +9,17 @@ import LogDashItem from "./components/LogDashItem";
 import StrainCalib from "./components/StrainCalibration/StrainCalib";
 import { SmartKnobLog } from "./types";
 import { useSmartKnobStore } from "./stores/smartKnobStore";
-import { useStore } from "zustand";
 
 function App() {
-  const { knob, serial, state, log, fullLog } = useSmartKnobStore();
+  const { knob, serial, log, fullLog } = useSmartKnobStore();
 
   const [darkMode, setDarkMode] = useState(false);
 
-  // const [smartKnob, setSmartKnob] = useState<SmartKnobWebSerial | undefined>(
-  //   undefined,
-  // );
-  // const [knob, setKnob] = useState<PB.Knob | undefined>(undefined);
   const [connectionState, setConnectionState] = useState(false);
-  const [calibrationWeight, setCalibrationWeight] = useState<number>(272);
-  const [strainCalibState, setStrainCalibState] = useState<
-    PB.StrainCalibState | undefined
-  >(undefined);
+  const [_, setStrainCalibState] = useState<PB.StrainCalibState | undefined>(
+    undefined,
+  );
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
-  // const [log, setLog] = useState<Array<SmartKnobLog>>([]);
-
-  // const [fullLog, setFullLog] = useState<Array<SmartKnobLog>>([]);
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
     try {
@@ -110,20 +101,6 @@ function App() {
     document.body.classList.toggle("dark");
   };
 
-  const strainCalibStep = () => {
-    if (strainCalibState === undefined)
-      return <p>Press to start strain calibration.</p>;
-
-    switch (strainCalibState.step) {
-      case 1:
-        return <p>Press when calibration weight is placed ontop of knob.</p>;
-      case 2:
-        return <p>Press at desired calibrated "pressure".</p>;
-      default:
-        return <p>Press to start calibration.</p>;
-    }
-  };
-
   useEffect(() => {
     if (localStorage.getItem("darkMode") === "true") {
       setDarkMode(true);
@@ -140,6 +117,8 @@ function App() {
     );
 
     const verboseLogging = localStorage.getItem("verboseLogging") === "true";
+
+    console.log(verboseLogging);
 
     if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;

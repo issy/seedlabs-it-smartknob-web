@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import DashItem from "./DashItem";
 import { PB } from "../proto/dist/protos";
 import "./LogDashItem.scss";
-import { SmartKnobLog } from "../types";
 import { useSmartKnobStore } from "../stores/smartKnobStore";
 
 interface LogDashItemProps {}
@@ -32,7 +31,7 @@ const LogDashItem: React.FC<LogDashItemProps> = () => {
 
   const toggleVerboseLogging = () => {
     setVerboseLogging(!verboseLogging);
-    localStorage.setItem("verboseLogging", verboseLogging.toString());
+    localStorage.setItem("verboseLogging", (!verboseLogging).toString());
   };
 
   const toggleOriginLogging = () => {

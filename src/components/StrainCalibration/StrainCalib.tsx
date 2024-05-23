@@ -13,7 +13,7 @@ interface StrainCalibProps extends PropsWithChildren {}
 const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
   const { knob, serial, log } = useSmartKnobStore();
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [run, setRun] = useState<number>(0);
+  const [run, setRun] = useState<number>(1);
   const nextStepCallback = () => {
     if (knob?.persistentConfig?.motor?.calibrated === false) {
       alert("Motor not calibrated! Please calibrate motor first.");
@@ -25,6 +25,13 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
       }),
     );
   };
+
+  const stepRefs = [
+    React.createRef<HTMLDivElement>(),
+    React.createRef<HTMLDivElement>(),
+    React.createRef<HTMLDivElement>(),
+    React.createRef<HTMLDivElement>(),
+  ];
 
   const checkIncludes = (str: string, count: number = 1) => {
     return (
@@ -53,22 +60,29 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
     ) {
       setRun((prev) => prev + 1);
       setCurrentStep(3);
-    } else if (
-      checkIncludes("Restart calibration by pressing 'Y' again.", run) &&
-      currentStep !== 0
-    ) {
-      setRun((prev) => prev + 1);
-      setCurrentStep(0);
-    }
-  }, [log]);
-
-  useEffect(() => {
-    if (run > 0) {
       setTimeout(() => {
         setCurrentStep(0);
       }, 5000);
     }
-  }, [run]);
+
+    if (
+      (checkIncludes("Restart calibration by pressing 'Y' again.", run) ||
+        checkIncludes(
+          "Calibration weight not detected. Please place the calibration weight on the knob and press 'Y' again",
+        )) &&
+      currentStep != 0
+    ) {
+      console.log("Restarting calibration");
+
+      setRun((prev) => prev + 1);
+      setCurrentStep(0);
+    }
+  }, [log]);
+  // useEffect(() => {
+  //   if (stepRefs[currentStep] && stepRefs[currentStep].current) {
+  //     stepRefs[currentStep].current.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [currentStep]);
 
   return (
     <DashItem
@@ -82,16 +96,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           : "NOT CALIBRATED"
       }
     >
-      {/* <label>Calibration Weight</label>
-              <input
-                type="number"
-                value={calibrationWeight}
-                onChange={(e) =>
-                  setCalibrationWeight(parseFloat(e.target.value))
-                }
-                title="Calibration weight in grams. Default is 272g."
-                className="focus:ring-skdk-500 w-full rounded-md border border-skdk bg-primary p-2 text-black shadow-sm focus:border-transparent focus:outline-none focus:ring-2 sm:text-sm"
-              /> */}
       <div className="flex gap-6">
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
@@ -104,6 +108,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="START"
           active={currentStep === 0}
+          ref={stepRefs[0]}
         />
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
@@ -116,6 +121,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="NEXT"
           active={currentStep === 1}
+          ref={stepRefs[1]}
         />
         <StrainCalibItem
           image={removeWeightImage}
@@ -128,6 +134,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           automatic={true}
           automaticDuration={5}
           active={currentStep === 2}
+          ref={stepRefs[2]}
         />
         <StrainCalibItem
           nextStepCallback={() => setCurrentStep(0)}
@@ -140,6 +147,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="DONE"
           active={currentStep === 3}
+          ref={stepRefs[3]}
         />
       </div>
     </DashItem>
@@ -147,3 +155,16 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
 };
 
 export default StrainCalib;
+
+// {
+//   /* <label>Calibration Weight</label>
+//               <input
+//                 type="number"
+//                 value={calibrationWeight}
+//                 onChange={(e) =>
+//                   setCalibrationWeight(parseFloat(e.target.value))
+//                 }
+//                 title="Calibration weight in grams. Default is 272g."
+//                 className="focus:ring-skdk-500 w-full rounded-md border border-skdk bg-primary p-2 text-black shadow-sm focus:border-transparent focus:outline-none focus:ring-2 sm:text-sm"
+//               /> */
+// }
