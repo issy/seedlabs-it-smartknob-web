@@ -102,7 +102,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
               DONT TOUCH <br /> THE KNOB
             </p>
           }
-          stepBtnText="START"
+          stepBtnText="TARE"
           active={currentStep === 0}
         />
         <StrainCalibItem
@@ -114,7 +114,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
               PLACE 250ml CAN <br /> ON TOP OF YOUR KNOB
             </p>
           }
-          stepBtnText="NEXT"
+          stepBtnText="CALIBRATE"
           active={currentStep === 1}
         />
         <StrainCalibItem

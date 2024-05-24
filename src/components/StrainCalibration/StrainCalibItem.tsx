@@ -41,6 +41,9 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
       }, 1000);
       setCountdown(automaticDuration);
       return () => clearInterval(interval);
+    } else {
+      setIsAnimating(false);
+      setCountdown(automaticDuration);
     }
   }, [active]);
 
@@ -69,7 +72,7 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         </div>
       </div>
       <button
-        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && "button-fill-animation"}`}
+        className={`btn ${!active && "btn-disabled pointer-events-none"} ${automatic && "btn-disabled"} ${isAnimating && "button-fill-animation"}`}
         onClick={nextStepCallback}
       >
         {(automatic && countdown + "s") || stepBtnText}
