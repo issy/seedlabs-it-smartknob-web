@@ -161,7 +161,7 @@ function App() {
               }
             >
               <button
-                className="btn"
+                className="btn m-3"
                 onClick={() =>
                   serial?.sendCommand(PB.SmartKnobCommand.MOTOR_CALIBRATE)
                 }

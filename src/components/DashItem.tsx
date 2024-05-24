@@ -1,8 +1,10 @@
-import React, { PropsWithChildren } from "react";
+import React, { HTMLAttributes, PropsWithChildren } from "react";
 import { useEffect, useState } from "react";
 import "./DashItem.scss";
 
-interface DashItemProps extends PropsWithChildren {
+interface DashItemProps
+  extends PropsWithChildren,
+    HTMLAttributes<HTMLDivElement> {
   title: string;
   index: number;
   status?: string;
@@ -15,6 +17,8 @@ const DashItem: React.FC<DashItemProps> = ({
   status,
   saveState,
   children,
+  className = "",
+  ...props
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -24,7 +28,10 @@ const DashItem: React.FC<DashItemProps> = ({
     }
   }, []);
   return (
-    <div className={`item_container relative ${open ? "active" : ""}`}>
+    <div
+      className={`item_container relative ${open ? "active" : ""} ${className}`}
+      {...props}
+    >
       <header
         onClick={() => {
           saveState && localStorage.setItem(title + index, (!open).toString());
@@ -42,7 +49,7 @@ const DashItem: React.FC<DashItemProps> = ({
           </p>
         ) : null}
       </header>
-      <div className="item_inner_container">{children}</div>
+      <div className="item_inner_container overflow-visible">{children}</div>
     </div>
   );
 };

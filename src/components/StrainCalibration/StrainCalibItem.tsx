@@ -1,4 +1,4 @@
-import React, { PropsWithRef, useEffect } from "react";
+import React, { PropsWithRef, useEffect, useRef } from "react";
 
 interface StrainCalibItemProps
   extends PropsWithRef<JSX.IntrinsicElements["div"]> {
@@ -23,8 +23,15 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
   nextStepCallback,
 }) => {
   const [countdown, setCountdown] = React.useState<number>(automaticDuration);
-
+  const active_ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (active_ref && active_ref.current) {
+      active_ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
     if (automatic && active) {
       const interval = setInterval(() => {
         setCountdown((prev) => (prev > 0 ? prev - 1 : prev));
@@ -33,8 +40,17 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
       return () => clearInterval(interval);
     }
   }, [active]);
+
+  // useEffect(() => {
+
+  //   console.log("Current Step: ", currentStep);
+  //   console.log(stepRefs);
+  // }, [currentStep]);
   return (
-    <div className="flex w-fit flex-shrink-0 select-none flex-col gap-4">
+    <div
+      className="flex w-fit flex-shrink-0 select-none flex-col gap-4"
+      ref={active_ref}
+    >
       <div
         className={`relative z-0 inline-block overflow-hidden border-2 border-slate-700 px-20 py-2 ${active && "bg-secondary"}`}
       >

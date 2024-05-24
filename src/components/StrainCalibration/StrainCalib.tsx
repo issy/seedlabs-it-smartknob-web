@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import dontTouchImage from "../../assets/DontTouchKnob.png";
 import placeWeightImage from "../../assets/PlaceWeight.png";
 import removeWeightImage from "../../assets/RemoveWeight.png";
@@ -26,12 +26,12 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
     );
   };
 
-  const stepRefs = [
-    React.createRef<HTMLDivElement>(),
-    React.createRef<HTMLDivElement>(),
-    React.createRef<HTMLDivElement>(),
-    React.createRef<HTMLDivElement>(),
-  ];
+  // const stepRefs = [
+  //   React.createRef<HTMLDivElement>(),
+  //   React.createRef<HTMLDivElement>(),
+  //   React.createRef<HTMLDivElement>(),
+  //   React.createRef<HTMLDivElement>(),
+  // ];
 
   const checkIncludes = (str: string, count: number = 1) => {
     return (
@@ -78,11 +78,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
       setCurrentStep(0);
     }
   }, [log]);
-  // useEffect(() => {
-  //   if (stepRefs[currentStep] && stepRefs[currentStep].current) {
-  //     stepRefs[currentStep].current.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, [currentStep]);
 
   return (
     <DashItem
@@ -95,8 +90,9 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           ? "CALIBRATED"
           : "NOT CALIBRATED"
       }
+      className="overflow-visible"
     >
-      <div className="flex gap-6">
+      <div className="flex gap-6 overflow-x-scroll p-3">
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
           image={dontTouchImage}
@@ -108,7 +104,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="START"
           active={currentStep === 0}
-          ref={stepRefs[0]}
         />
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
@@ -121,7 +116,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="NEXT"
           active={currentStep === 1}
-          ref={stepRefs[1]}
         />
         <StrainCalibItem
           image={removeWeightImage}
@@ -134,7 +128,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           automatic={true}
           automaticDuration={5}
           active={currentStep === 2}
-          ref={stepRefs[2]}
         />
         <StrainCalibItem
           nextStepCallback={() => setCurrentStep(0)}
@@ -147,7 +140,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
           }
           stepBtnText="DONE"
           active={currentStep === 3}
-          ref={stepRefs[3]}
         />
       </div>
     </DashItem>
