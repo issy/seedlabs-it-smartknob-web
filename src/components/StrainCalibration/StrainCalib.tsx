@@ -115,6 +115,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
             </p>
           }
           stepBtnText="CALIBRATE"
+          automaticDuration={10}
           active={currentStep === 1}
         />
         <StrainCalibItem

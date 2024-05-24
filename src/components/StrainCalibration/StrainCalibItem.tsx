@@ -46,12 +46,6 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
       setCountdown(automaticDuration);
     }
   }, [active]);
-
-  // useEffect(() => {
-
-  //   console.log("Current Step: ", currentStep);
-  //   console.log(stepRefs);
-  // }, [currentStep]);
   return (
     <div
       className="flex w-fit flex-shrink-0 select-none flex-col gap-4"
@@ -72,8 +66,17 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         </div>
       </div>
       <button
-        className={`btn ${!active && "btn-disabled pointer-events-none"} ${automatic && "btn-disabled"} ${isAnimating && "button-fill-animation"}`}
-        onClick={nextStepCallback}
+        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && `btn-disabled button-fill-animation animate-[fillBackground_${automaticDuration}s_forwards]`}`}
+        onClick={() => {
+          if (automaticDuration > 0 && automatic === false) {
+            console.log(
+              "Automatic duration is set to " + automaticDuration + "s",
+            );
+
+            setIsAnimating(true);
+          }
+          if (nextStepCallback !== undefined) nextStepCallback();
+        }}
       >
         {(automatic && countdown + "s") || stepBtnText}
       </button>
