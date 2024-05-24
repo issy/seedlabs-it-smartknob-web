@@ -1,0 +1,16 @@
+@keyframes fillBackground {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+.button-fill-animation {
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity)) !important;
+  background: linear-gradient(to right, #47585c 100%, transparent 0);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  animation: fillBackground 5s forwards;
+}

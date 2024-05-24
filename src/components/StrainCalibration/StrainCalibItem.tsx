@@ -1,4 +1,5 @@
-import React, { PropsWithRef, useEffect, useRef } from "react";
+import React, { PropsWithRef, useEffect, useRef, useState } from "react";
+import "./StrainCalibItem.scss";
 
 interface StrainCalibItemProps
   extends PropsWithRef<JSX.IntrinsicElements["div"]> {
@@ -22,8 +23,9 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
   active,
   nextStepCallback,
 }) => {
-  const [countdown, setCountdown] = React.useState<number>(automaticDuration);
+  const [countdown, setCountdown] = useState<number>(automaticDuration);
   const active_ref = useRef<HTMLDivElement>(null);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
   useEffect(() => {
     if (active_ref && active_ref.current) {
       active_ref.current.scrollIntoView({
@@ -33,6 +35,7 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
       });
     }
     if (automatic && active) {
+      setIsAnimating(true);
       const interval = setInterval(() => {
         setCountdown((prev) => (prev > 0 ? prev - 1 : prev));
       }, 1000);
@@ -66,7 +69,7 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         </div>
       </div>
       <button
-        className={`btn ${!active && "btn-disabled pointer-events-none"}`}
+        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && "button-fill-animation"}`}
         onClick={nextStepCallback}
       >
         {(automatic && countdown + "s") || stepBtnText}
