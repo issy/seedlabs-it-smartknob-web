@@ -92,7 +92,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
       }
       className="overflow-visible"
     >
-      <div className="flex gap-6 overflow-x-scroll p-3">
+      <div className="hide-scrollbar flex gap-6 overflow-x-scroll p-3">
         <StrainCalibItem
           nextStepCallback={nextStepCallback}
           image={dontTouchImage}
