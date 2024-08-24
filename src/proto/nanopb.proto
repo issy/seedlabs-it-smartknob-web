@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "nanopb.proto";
+import "settings.proto";
 
 package PB;
 
@@ -31,6 +32,7 @@ message FromSmartKnob {
         SmartKnobConfig smartknob_config = 4;
         SmartKnobCommand smartknob_command = 5;
         StrainCalibration strain_calibration = 6;
+        SETTINGS.Settings settings = 7;
     }
 }
 
@@ -40,6 +42,11 @@ message Knob {
     string ip_address = 2 [(nanopb).max_length = 50];
     PersistentConfiguration persistent_config = 3;
 }
+
+
+
+
+
 
 /** Motor calibration state information */
 message MotorCalibState {
@@ -200,7 +207,7 @@ message SmartKnobConfig {
      * in effect at the time of the State snapshot instead of having to infer it from the
      * other config fields.
      */
-    string text = 10 [(nanopb).max_length = 50];
+    string id = 10 [(nanopb).max_length = 64];
 
     /**
      * For a "magnetic" detent mode - where not all positions should have detents - this

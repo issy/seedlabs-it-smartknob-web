@@ -8,9 +8,11 @@ import { useSmartKnobStore } from "../../stores/smartKnobStore";
 import { PB } from "../../proto/dist/protos";
 import StrainCalibItem from "./StrainCalibItem";
 
-interface StrainCalibProps extends PropsWithChildren {}
+interface StrainCalibProps extends PropsWithChildren {
+  index: number;
+}
 
-const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
+const StrainCalib: React.FC<StrainCalibProps> = ({ index }) => {
   const { knob, serial, log } = useSmartKnobStore();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [run, setRun] = useState<number>(1);
@@ -82,7 +84,7 @@ const StrainCalib: React.FC<StrainCalibProps> = ({}) => {
   return (
     <DashItem
       title="STRAIN CALIBRATION"
-      index={3}
+      index={index}
       status={
         knob?.persistentConfig?.strainScale != 1.0 &&
         knob?.persistentConfig?.strainScale != 0 &&

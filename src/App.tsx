@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.scss";
-import { PB } from "./proto/dist/protos";
+import { PB, SETTINGS } from "./proto/dist/protos";
 import { SmartKnobWebSerial } from "./webserial";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import seedlabsLogo from "./assets/logoFull_white_transparent.webp";
@@ -9,6 +9,7 @@ import LogDashItem from "./components/LogDashItem";
 import StrainCalib from "./components/StrainCalibration/StrainCalib";
 import { SmartKnobLog } from "./types";
 import { useSmartKnobStore } from "./stores/smartKnobStore";
+import ConfigDashItem from "./components/ConfigDashItem/ConfigDashItem";
 
 function App() {
   const { knob, serial, log, fullLog } = useSmartKnobStore();
@@ -118,7 +119,7 @@ function App() {
 
     const verboseLogging = localStorage.getItem("verboseLogging") === "true";
 
-    console.log(verboseLogging);
+    // console.log(verboseLogging);
 
     if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
@@ -151,9 +152,12 @@ function App() {
             className={`${connectionState ? "" : "disabled"}`}
           >
             <LogDashItem />
+
+            <ConfigDashItem index={2} />
+
             <DashItem
               title="MOTOR CALIBRATION"
-              index={2}
+              index={3}
               status={
                 knob?.persistentConfig?.motor?.calibrated
                   ? "CALIBRATED"
@@ -169,7 +173,7 @@ function App() {
                 Press to start motor calibration.
               </button>
             </DashItem>
-            <StrainCalib />
+            <StrainCalib index={4} />
           </div>
         ) : (
           "Web Serial API is not supported in this browser."
