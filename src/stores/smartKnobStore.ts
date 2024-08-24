@@ -20,14 +20,15 @@ interface KnobConfig {
     minBright: number;
   };
   ledRing: {
+    enabled: boolean;
     dim: boolean;
     maxBright: number;
     minBright: number;
-    color: number;
+    color: string;
     beacon: {
       enabled: boolean;
       brightness: number;
-      color: number;
+      color: string;
     };
   };
 }
@@ -42,13 +43,14 @@ export const useSmartKnobStore = create<SmartKnobState>((_) => ({
   state: PB.SmartKnobState.create(),
 
   settings: {
-    screen: { dim: true, timeout: 30, maxBright: 100, minBright: 10 },
+    screen: { dim: true, timeout: 30, maxBright: 100, minBright: 30 },
     ledRing: {
-      dim: true,
+      enabled: true,
+      dim: false,
       maxBright: 100,
-      minBright: 10,
-      color: 32896,
-      beacon: { enabled: true, brightness: 10, color: 32896 },
+      minBright: 0,
+      color: "#008080",
+      beacon: { enabled: true, brightness: 30, color: "#008080" }, //32896
     },
   },
   // setState: (state: PB.SmartKnobState) => set({ state }),

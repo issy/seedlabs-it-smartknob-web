@@ -11,7 +11,7 @@ interface ConfigDashItemProps {
 const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
   const { knob, serial, settings } = useSmartKnobStore();
 
-  console.log("settings", settings);
+  // console.log("settings", settings);
 
   return (
     <DashItem
@@ -81,13 +81,29 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
           <input
             type="checkbox"
             className="toggle"
+            checked={settings.ledRing.enabled}
+            onChange={(e) => {
+              settings.ledRing.enabled = e.target.checked;
+              useSmartKnobStore.setState({});
+            }}
+          />
+          <input
+            type="checkbox"
+            className="toggle"
             checked={settings.ledRing.dim}
             onChange={(e) => {
               settings.ledRing.dim = e.target.checked;
               useSmartKnobStore.setState({});
             }}
           />
-          <input type="color" />
+          <input
+            type="color"
+            value={settings.ledRing.color}
+            onChange={(e) => {
+              settings.ledRing.color = e.target.value;
+              useSmartKnobStore.setState({});
+            }}
+          />
         </div>
         <div className="flex flex-col gap-3">
           <h3>Beacon</h3>
@@ -100,7 +116,16 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               useSmartKnobStore.setState({});
             }}
           />
-          <input type="color" />
+          <input
+            type="color"
+            value={settings.ledRing.beacon.color}
+            onChange={(e) => {
+              console.log();
+
+              settings.ledRing.beacon.color = e.target.value;
+              useSmartKnobStore.setState({});
+            }}
+          />
         </div>
       </div>
 
@@ -113,6 +138,19 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               screen: {
                 ...settings.screen,
                 maxBright: settings.screen.maxBright * (65535 / 100),
+                minBright: settings.screen.minBright * (65535 / 100),
+              },
+              ledRing: {
+                ...settings.ledRing,
+                maxBright: settings.ledRing.maxBright * (65535 / 100),
+                minBright: settings.ledRing.minBright * (65535 / 100),
+                color: parseInt(settings.ledRing.color.slice(1), 16),
+                beacon: {
+                  ...settings.ledRing.beacon,
+                  brightness:
+                    settings.ledRing.beacon.brightness * (65535 / 100),
+                  color: parseInt(settings.ledRing.beacon.color.slice(1), 16),
+                },
               },
             }),
           )
