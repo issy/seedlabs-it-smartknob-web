@@ -46,7 +46,7 @@ export const useSmartKnobStore = create<SmartKnobState>((_) => ({
     screen: { dim: true, timeout: 30, maxBright: 100, minBright: 30 },
     ledRing: {
       enabled: true,
-      dim: false,
+      dim: true,
       maxBright: 100,
       minBright: 0,
       color: "#008080",
