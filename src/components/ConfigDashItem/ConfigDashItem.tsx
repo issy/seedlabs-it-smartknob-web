@@ -28,7 +28,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
       <div className="m-3 flex  gap-6">
         <div className="flex flex-grow flex-col gap-3">
           <h3>Screen Dimming</h3>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Enable/Disable</span>
             <input
               type="checkbox"
@@ -41,7 +41,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
             />
           </label>
 
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Timeout</span>
             <input
               type="number"
@@ -56,7 +56,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               }}
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Max Brightness</span>
             <input
               type="range"
@@ -72,7 +72,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               }}
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Min Brightness</span>
             <input
               type="range"
@@ -91,7 +91,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
         </div>
         <div className="flex flex-grow flex-col gap-3">
           <h3>Led Ring</h3>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Enable/Disable</span>
             <input
               type="checkbox"
@@ -103,7 +103,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               }}
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Dim</span>
             <input
               type="checkbox"
@@ -116,7 +116,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
             />
           </label>
 
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Max Brightness</span>
             <input
               type="range"
@@ -130,11 +130,9 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
                 }
                 useSmartKnobStore.setState({});
               }}
-              disabled
-              title="Not yet implemented"
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Min Brightness</span>
             <input
               type="range"
@@ -148,12 +146,10 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
                 useSmartKnobStore.setState({});
               }}
               className="range w-8/12"
-              disabled
-              title="Not yet implemented"
             />
           </label>
 
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Color</span>
             <input
               type="color"
@@ -167,7 +163,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
         </div>
         <div className="flex flex-grow flex-col gap-3">
           <h3>Beacon</h3>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Enable/Disable</span>
             <input
               type="checkbox"
@@ -179,7 +175,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
               }}
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Brightness</span>
             <input
               type="range"
@@ -191,11 +187,9 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
                 settings.ledRing.beacon.brightness = parseInt(e.target.value);
                 useSmartKnobStore.setState({});
               }}
-              disabled
-              title="Not yet implemented"
             />
           </label>
-          <label className="form-control label cursor-pointer">
+          <label className="label form-control cursor-pointer">
             <span className="label-text">Color</span>
             <input
               type="color"
@@ -218,6 +212,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
             SETTINGS.Settings.create({
               screen: {
                 ...settings.screen,
+                timeout: settings.screen.timeout * 1000,
                 maxBright: settings.screen.maxBright * (65535 / 100),
                 minBright: settings.screen.minBright * (65535 / 100),
               },
@@ -228,8 +223,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
                 color: parseInt(settings.ledRing.color.slice(1), 16),
                 beacon: {
                   ...settings.ledRing.beacon,
-                  brightness:
-                    settings.ledRing.beacon.brightness * (65535 / 100),
+                  brightness: settings.ledRing.beacon.brightness * (255 / 100),
                   color: parseInt(settings.ledRing.beacon.color.slice(1), 16),
                 },
               },

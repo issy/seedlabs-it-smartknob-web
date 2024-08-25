@@ -78,7 +78,9 @@ function App() {
           settings: {
             screen: {
               dim: settings.screen?.dim ?? true,
-              timeout: settings.screen?.timeout ?? 30,
+              timeout: settings.screen?.timeout
+                ? settings.screen?.timeout / 1000
+                : 30,
               maxBright: settings.screen?.maxBright
                 ? settings.screen?.maxBright / (65535 / 100)
                 : 100,
@@ -89,8 +91,12 @@ function App() {
             ledRing: {
               enabled: settings.ledRing?.enabled ?? true,
               dim: settings.ledRing?.dim ?? true,
-              maxBright: settings.ledRing?.maxBright ?? 100,
-              minBright: settings.ledRing?.minBright ?? 10,
+              maxBright: settings.ledRing?.maxBright
+                ? settings.ledRing?.maxBright / (65535 / 100)
+                : 100,
+              minBright: settings.ledRing?.minBright
+                ? settings.ledRing?.minBright / (65535 / 100)
+                : 10,
               color:
                 "#" + settings.ledRing?.color?.toString(16).padStart(6, "0") ??
                 "#008080",
