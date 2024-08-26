@@ -131,7 +131,6 @@ function App() {
     }
 
     if (message.payload === "log" && message.log !== null) {
-      // console.log('LOG from smartknob', message.log?.msg);
       const timestamp = Date.now();
 
       const log = {

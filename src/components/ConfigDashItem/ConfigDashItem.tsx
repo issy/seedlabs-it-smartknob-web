@@ -18,7 +18,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
       title="CONFIG"
       index={index}
       status={
-        knob?.macAddress !== "" && knob?.settings === null
+        knob?.macAddress !== "" && knob?.settings === null // add better check in the future, check firm version and or protbuf protocol version
           ? "FIRMWARE VERSION NOT SUPPORTED"
           : ""
       }
