@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.scss";
-import { PB } from "./proto/dist/protos";
+import { PB, SETTINGS } from "./proto/dist/protos";
 import { SmartKnobWebSerial } from "./webserial";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import seedlabsLogo from "./assets/logoFull_white_transparent.webp";
@@ -9,6 +9,7 @@ import LogDashItem from "./components/LogDashItem";
 import StrainCalib from "./components/StrainCalibration/StrainCalib";
 import { SmartKnobLog } from "./types";
 import { useSmartKnobStore } from "./stores/smartKnobStore";
+import ConfigDashItem from "./components/ConfigDashItem/ConfigDashItem";
 
 function App() {
   const { knob, serial, log, fullLog } = useSmartKnobStore();
@@ -61,13 +62,62 @@ function App() {
   };
 
   const onMessage = (message: PB.FromSmartKnob) => {
+    if (message.payload) {
+      setConnectionState(true);
+    }
+
     if (message.payload != "log" && message.payload != "smartknobState")
       console.log(message);
 
     if (message.payload === "knob" && message.knob !== null) {
       const knob_ = PB.Knob.create(message.knob);
+
       useSmartKnobStore.setState({ knob: knob_ });
-      setConnectionState(true);
+      if (knob_.settings !== null) {
+        const settings = SETTINGS.Settings.create(knob_.settings);
+        useSmartKnobStore.setState({
+          settings: {
+            screen: {
+              dim: settings.screen?.dim ?? true,
+              timeout: settings.screen?.timeout
+                ? settings.screen?.timeout / 1000
+                : 30,
+              maxBright: settings.screen?.maxBright
+                ? settings.screen?.maxBright / (65535 / 100)
+                : 100,
+              minBright: settings.screen?.minBright
+                ? settings.screen?.minBright / (65535 / 100)
+                : 10,
+            },
+            ledRing: {
+              enabled: settings.ledRing?.enabled ?? true,
+              dim: settings.ledRing?.dim ?? true,
+              maxBright: settings.ledRing?.maxBright
+                ? settings.ledRing?.maxBright / (65535 / 100)
+                : 100,
+              minBright: settings.ledRing?.minBright
+                ? settings.ledRing?.minBright / (65535 / 100)
+                : 10,
+              color:
+                "#" + settings.ledRing?.color?.toString(16).padStart(6, "0") ??
+                "#008080",
+              beacon: {
+                enabled: settings.ledRing?.beacon?.enabled ?? true,
+                brightness: settings.ledRing?.beacon?.brightness ?? 10,
+                color:
+                  "#" +
+                    settings.ledRing?.beacon?.color
+                      ?.toString(16)
+                      .padStart(6, "0") ?? "#008080",
+              },
+            },
+          },
+        });
+      }
+    }
+
+    if (message.payload !== "log") {
+      console.log(message.payload);
     }
 
     if (
@@ -81,7 +131,6 @@ function App() {
     }
 
     if (message.payload === "log" && message.log !== null) {
-      // console.log('LOG from smartknob', message.log?.msg);
       const timestamp = Date.now();
 
       const log = {
@@ -118,13 +167,15 @@ function App() {
 
     const verboseLogging = localStorage.getItem("verboseLogging") === "true";
 
-    console.log(verboseLogging);
+    // console.log(verboseLogging);
 
     if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
       useSmartKnobStore.setState({ log: [...log, newLogMessage] });
     }
   }, [newLogMessage]);
+
+  let index = 1;
 
   return (
     <>
@@ -150,10 +201,12 @@ function App() {
             id="skdk-inner-container"
             className={`${connectionState ? "" : "disabled"}`}
           >
-            <LogDashItem />
+            <LogDashItem index={index++} />
+            <ConfigDashItem index={index++} />
+
             <DashItem
               title="MOTOR CALIBRATION"
-              index={2}
+              index={index++}
               status={
                 knob?.persistentConfig?.motor?.calibrated
                   ? "CALIBRATED"
@@ -169,7 +222,7 @@ function App() {
                 Press to start motor calibration.
               </button>
             </DashItem>
-            <StrainCalib />
+            <StrainCalib index={index++} />
           </div>
         ) : (
           "Web Serial API is not supported in this browser."

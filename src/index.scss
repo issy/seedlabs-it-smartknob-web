@@ -59,9 +59,32 @@ body {
 }
 
 .btn {
-  @apply bg-skdk px-4 py-2 text-primary;
+  @apply rounded-none bg-skdk px-4 py-2 text-primary;
   &.btn-disabled {
     @apply cursor-not-allowed bg-gray-400;
+  }
+}
+
+.toggle {
+  @apply rounded-none;
+}
+
+.input {
+  @apply rounded-none;
+}
+
+.range {
+  @apply rounded-none;
+  &::-webkit-slider-thumb {
+    border-radius: 0; /* Remove rounding */
+  }
+
+  &::-moz-range-thumb {
+    border-radius: 0; /* Remove rounding */
+  }
+
+  &::-ms-thumb {
+    border-radius: 0; /* Remove rounding */
   }
 }
 

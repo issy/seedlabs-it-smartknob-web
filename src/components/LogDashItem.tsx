@@ -4,9 +4,11 @@ import { PB } from "../proto/dist/protos";
 import "./LogDashItem.scss";
 import { useSmartKnobStore } from "../stores/smartKnobStore";
 
-interface LogDashItemProps {}
+interface LogDashItemProps {
+  index: number;
+}
 
-const LogDashItem: React.FC<LogDashItemProps> = () => {
+const LogDashItem: React.FC<LogDashItemProps> = ({ index }) => {
   const { log, fullLog } = useSmartKnobStore();
 
   const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
@@ -61,7 +63,7 @@ const LogDashItem: React.FC<LogDashItemProps> = () => {
   }, [log]);
 
   return (
-    <DashItem title="LOGS" index={1} saveState={true}>
+    <DashItem title="LOGS" index={index} saveState={true}>
       <div className="log-header">
         <div className="log-levels">
           <button

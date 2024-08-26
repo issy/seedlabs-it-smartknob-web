@@ -1,7 +1,7 @@
 import { encode as cobsEncode, decode as cobsDecode } from "./cobs";
 import * as CRC32 from "crc-32";
 
-import { PB } from "../proto/dist/protos";
+import { PB, SETTINGS } from "../proto/dist/protos";
 
 const PROTOBUF_PROTOCOL_VERSION = 1;
 
@@ -68,6 +68,14 @@ export class SmartKnobCore {
     this.enqueueMessage(
       PB.ToSmartknob.create({
         smartknobCommand: command,
+      }),
+    );
+  }
+
+  public sendSettings(settings: SETTINGS.Settings): void {
+    this.enqueueMessage(
+      PB.ToSmartknob.create({
+        settings: settings,
       }),
     );
   }
