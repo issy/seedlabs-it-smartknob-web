@@ -14,7 +14,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
 
   return (
     <DashItem
-      title="CONFIG"
+      title="CONFIGURE DEVICE"
       index={index}
       status={
         knob?.macAddress !== "" && knob?.settings === null // TODO: add better check in the future, check firm version and or protbuf protocol version
