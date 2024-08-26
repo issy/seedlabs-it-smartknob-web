@@ -17,14 +17,14 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
     <DashItem
       title="CONFIG"
       index={index}
-
-      // status={
-      //   knob?.persistentConfig?.motor?.calibrated
-      //     ? "CALIBRATED"
-      //     : "NOT CALIBRATED"
-      // }
+      status={
+        knob?.macAddress !== "" && knob?.settings === null
+          ? "FIRMWARE VERSION NOT SUPPORTED"
+          : ""
+      }
+      className={`${knob?.macAddress !== "" && knob?.settings === null ? "pointer-events-none touch-none opacity-40" : ""}`}
     >
-      <div className="m-3 flex  gap-6">
+      <div className="$  m-3 flex gap-6">
         <div className="flex flex-grow flex-col gap-3">
           <h3>Screen Dimming</h3>
           <label className="label form-control cursor-pointer">

@@ -71,6 +71,7 @@ function App() {
 
     if (message.payload === "knob" && message.knob !== null) {
       const knob_ = PB.Knob.create(message.knob);
+
       useSmartKnobStore.setState({ knob: knob_ });
       if (knob_.settings !== null) {
         const settings = SETTINGS.Settings.create(knob_.settings);
@@ -113,43 +114,11 @@ function App() {
           },
         });
       }
-      // setConnectionState(true);
     }
 
     if (message.payload !== "log") {
       console.log(message.payload);
     }
-    // if (message.payload === "settings" && message.settings !== null) {
-    //   const settings = SETTINGS.Settings.create(message.settings);
-    //   console.log(settings.ledRing?.color?.toString(16));
-
-    //   useSmartKnobStore.setState({
-    //     settings: {
-    //       screen: {
-    //         dim: settings.screen?.dim ?? true,
-    //         timeout: settings.screen?.timeout ?? 30,
-    //         maxBright: settings.screen?.maxBright
-    //           ? settings.screen?.maxBright / (65535 / 100)
-    //           : 100,
-    //         minBright: settings.screen?.minBright
-    //           ? settings.screen?.minBright / (65535 / 100)
-    //           : 10,
-    //       },
-    //       ledRing: {
-    //         enabled: settings.ledRing?.enabled ?? true,
-    //         dim: settings.ledRing?.dim ?? true,
-    //         maxBright: settings.ledRing?.maxBright ?? 100,
-    //         minBright: settings.ledRing?.minBright ?? 10,
-    //         color: settings.ledRing?.color?.toString(16) ?? "#008080",
-    //         beacon: {
-    //           enabled: settings.ledRing?.beacon?.enabled ?? true,
-    //           brightness: settings.ledRing?.beacon?.brightness ?? 10,
-    //           color: settings.ledRing?.beacon?.color?.toString(16) ?? "#008080",
-    //         },
-    //       },
-    //     },
-    //   });
-    // }
 
     if (
       message.payload === "strainCalibState" &&
@@ -234,7 +203,7 @@ function App() {
             className={`${connectionState ? "" : "disabled"}`}
           >
             <LogDashItem index={index++} />
-            {true && <ConfigDashItem index={index++} />}
+            <ConfigDashItem index={index++} />
 
             <DashItem
               title="MOTOR CALIBRATION"
