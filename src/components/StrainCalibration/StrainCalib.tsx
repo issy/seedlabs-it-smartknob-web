@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import dontTouchImage from "../../assets/DontTouchKnob.png";
 import placeWeightImage from "../../assets/PlaceWeight.png";
 import removeWeightImage from "../../assets/RemoveWeight.png";

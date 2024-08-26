@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { PB, SETTINGS } from "../proto/dist/protos";
+import { PB } from "../proto/dist/protos";
 import { SmartKnobLog } from "../types";
 import { SmartKnobWebSerial } from "../webserial";
 

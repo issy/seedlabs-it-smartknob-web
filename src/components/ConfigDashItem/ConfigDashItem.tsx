@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DashItem from "../DashItem";
 import "./ConfigDashItem.scss";
 import { SETTINGS } from "../../proto/dist/protos";
@@ -18,7 +17,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
       title="CONFIG"
       index={index}
       status={
-        knob?.macAddress !== "" && knob?.settings === null // add better check in the future, check firm version and or protbuf protocol version
+        knob?.macAddress !== "" && knob?.settings === null // TODO: add better check in the future, check firm version and or protbuf protocol version
           ? "FIRMWARE VERSION NOT SUPPORTED"
           : ""
       }
