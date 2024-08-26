@@ -207,6 +207,8 @@ function App() {
     }
   }, [newLogMessage]);
 
+  let index = 1;
+
   return (
     <>
       <div className="skdk-container">
@@ -231,13 +233,12 @@ function App() {
             id="skdk-inner-container"
             className={`${connectionState ? "" : "disabled"}`}
           >
-            <LogDashItem />
-
-            <ConfigDashItem index={2} />
+            <LogDashItem index={index++} />
+            {true && <ConfigDashItem index={index++} />}
 
             <DashItem
               title="MOTOR CALIBRATION"
-              index={3}
+              index={index++}
               status={
                 knob?.persistentConfig?.motor?.calibrated
                   ? "CALIBRATED"
@@ -253,7 +254,7 @@ function App() {
                 Press to start motor calibration.
               </button>
             </DashItem>
-            <StrainCalib index={4} />
+            <StrainCalib index={index++} />
           </div>
         ) : (
           "Web Serial API is not supported in this browser."

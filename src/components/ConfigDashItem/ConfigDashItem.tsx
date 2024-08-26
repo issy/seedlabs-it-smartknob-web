@@ -17,7 +17,6 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
     <DashItem
       title="CONFIG"
       index={index}
-      className="active"
 
       // status={
       //   knob?.persistentConfig?.motor?.calibrated
