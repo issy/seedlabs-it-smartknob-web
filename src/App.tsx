@@ -201,7 +201,6 @@ function App() {
             id="skdk-inner-container"
             className={`${connectionState ? "" : "disabled"}`}
           >
-            <LogDashItem index={index++} />
             <ConfigDashItem index={index++} />
 
             <DashItem
@@ -223,6 +222,8 @@ function App() {
               </button>
             </DashItem>
             <StrainCalib index={index++} />
+
+            <LogDashItem index={index++} />
           </div>
         ) : (
           "Web Serial API is not supported in this browser."
