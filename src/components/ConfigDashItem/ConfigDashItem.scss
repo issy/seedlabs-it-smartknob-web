@@ -3,3 +3,20 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
+
+input[type="number"] {
+  background: var(--fallback-bc, oklch(var(--bc) / 1));
+  border: 2px var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
+
+  color: black;
+}
+
+input[type="checkbox"] {
+  --tglbg: var(--fallback-bc, oklch(var(--bc) / 1));
+  --handleoffset: 1.5rem;
+  background: var(--fallback-b1, oklch(var(--b1) / 1));
+
+  &:hover {
+    background: var(--fallback-b1, oklch(var(--b1) / 1));
+  }
+}
