@@ -21,7 +21,7 @@ const ConfigDashItem: React.FC<ConfigDashItemProps> = ({ index }) => {
           ? "FIRMWARE VERSION NOT SUPPORTED"
           : ""
       }
-      className={`${knob?.macAddress !== "" && knob?.settings === null ? "pointer-events-none touch-none opacity-40" : ""} active`} //! TODO REMOVE ACTIVE CLASS ONLY FOR TESTING
+      className={`${knob?.macAddress !== "" && knob?.settings === null ? "pointer-events-none touch-none opacity-40" : ""}`} //! TODO REMOVE ACTIVE CLASS ONLY FOR TESTING
     >
       <div className="$  m-3 flex gap-6">
         <div className="flex flex-grow flex-col gap-3">
