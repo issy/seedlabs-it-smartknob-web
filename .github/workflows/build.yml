@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build Project
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,7 +27,7 @@ jobs:
       - name: Build project
         run: pnpm build
   lint:
-    name: Lint Code
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
