@@ -1,5 +1,10 @@
-import React, { HTMLAttributes, PropsWithChildren } from "react";
-import { useEffect, useState } from "react";
+import {
+  type FC,
+  type HTMLAttributes,
+  type PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
 import "./DashItem.scss";
 
 interface DashItemProps
@@ -11,7 +16,7 @@ interface DashItemProps
   saveState?: boolean;
 }
 
-const DashItem: React.FC<DashItemProps> = ({
+const DashItem: FC<DashItemProps> = ({
   title,
   index,
   status,
@@ -26,7 +31,8 @@ const DashItem: React.FC<DashItemProps> = ({
     if (saveState && localStorage.getItem(title + index) !== null) {
       setOpen(localStorage.getItem(title + index) === "true");
     }
-  }, []);
+  }, [index, saveState, title]);
+
   return (
     <div
       className={`item_container relative ${open ? "active" : ""} ${className}`}

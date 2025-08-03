@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type FC, useEffect, useRef, useState } from "react";
 import DashItem from "./DashItem";
 import { PB } from "../proto/dist/protos";
 import "./LogDashItem.scss";
@@ -8,7 +8,7 @@ interface LogDashItemProps {
   index: number;
 }
 
-const LogDashItem: React.FC<LogDashItemProps> = ({ index }) => {
+const LogDashItem: FC<LogDashItemProps> = ({ index }) => {
   const { log, fullLog } = useSmartKnobStore();
 
   const [selectedLogLevels, setSelectedLogLevels] = useState<Set<PB.LogLevel>>(
@@ -51,8 +51,6 @@ const LogDashItem: React.FC<LogDashItemProps> = ({ index }) => {
 
   useEffect(() => {
     if (consoleRef.current === null) return;
-    // console.log(consoleRef.current.scrollHeight);
-    // console.log(consoleRef.current.scrollTop + consoleRef.current.clientHeight);
 
     if (logInFocus)
       if (
@@ -133,7 +131,7 @@ const LogDashItem: React.FC<LogDashItemProps> = ({ index }) => {
             const seconds = String(date.getSeconds()).padStart(2, "0");
             const timeString = `${hours}:${minutes}:${seconds}`;
 
-            var logLevelString = getLogLevelString(msg.level);
+            const logLevelString = getLogLevelString(msg.level);
 
             if (msg.origin.length > 40) {
               msg.origin = `...${msg.origin.slice(

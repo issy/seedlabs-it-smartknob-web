@@ -33,7 +33,7 @@ interface KnobConfig {
   };
 }
 
-export const useSmartKnobStore = create<SmartKnobState>((_) => ({
+export const useSmartKnobStore = create<SmartKnobState>(() => ({
   knob: PB.Knob.create(),
 
   serial: undefined,

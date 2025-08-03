@@ -17,9 +17,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
 
   const [connectionState, setConnectionState] = useState(false);
-  const [_, setStrainCalibState] = useState<PB.StrainCalibState | undefined>(
-    undefined,
-  );
+  const [, setStrainCalibState] = useState<PB.StrainCalibState | undefined>(undefined);
   const [newLogMessage, setNewLogMessage] = useState<SmartKnobLog>();
 
   const connectToSmartKnob = async (serialPort: SerialPort) => {
@@ -169,13 +167,11 @@ function App() {
 
     const verboseLogging = localStorage.getItem("verboseLogging") === "true";
 
-    // console.log(verboseLogging);
-
     if (storedLogLevels.has(newLogMessage.level)) {
       if (!verboseLogging && newLogMessage.isVerbose) return;
       useSmartKnobStore.setState({ log: [...log, newLogMessage] });
     }
-  }, [newLogMessage]);
+  }, [fullLog, log, newLogMessage]);
 
   let index = 1;
 
