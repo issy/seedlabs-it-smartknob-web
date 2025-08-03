@@ -33,10 +33,8 @@ interface KnobConfig {
   };
 }
 
-// export const useSmartKnobStore = create<SmartKnobState>((set) => ({
 export const useSmartKnobStore = create<SmartKnobState>((_) => ({
   knob: PB.Knob.create(),
-  // setKnob: (knob: PB.Knob) => set({ knob }),
 
   serial: undefined,
 
@@ -53,11 +51,8 @@ export const useSmartKnobStore = create<SmartKnobState>((_) => ({
       beacon: { enabled: true, brightness: 30, color: "#008080" }, //32896
     },
   },
-  // setState: (state: PB.SmartKnobState) => set({ state }),
 
   log: [],
-  // setLog: (log: SmartKnobLog[]) => set({ log }),
 
   fullLog: [],
-  // setFullLog: (fullLog: SmartKnobLog[]) => set({ fullLog }),
 }));

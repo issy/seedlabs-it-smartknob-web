@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+      - name: Set up pnpm and install dependencies
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+          run_install: true
+      - name: Build project
+        run: pnpm build
