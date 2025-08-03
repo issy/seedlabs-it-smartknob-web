@@ -66,7 +66,7 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         </div>
       </div>
       <button
-        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && `btn-disabled button-fill-animation animate-[fillBackground_${automaticDuration}s_forwards]`}`}
+        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && `button-fill-animation btn-disabled animate-[fillBackground_${automaticDuration}s_forwards]`}`}
         onClick={() => {
           if (automaticDuration > 0 && automatic === false) {
             console.log(
