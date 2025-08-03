@@ -14,12 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # V4 fixed commit SHA
+        uses: actions/checkout@v4
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-      - name: Install dependencies
-        run: pnpm install
+      - name: Set up pnpm and install dependencies
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+          run_install: true
       - name: Build project
         run: pnpm build
