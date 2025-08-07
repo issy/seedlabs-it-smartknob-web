@@ -21,7 +21,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.2.0",
+    "@tabler/icons-react": "^3.34.1",
     "@types/w3c-web-serial": "^1.0.6",
     "crc-32": "^1.2.2",
     "daisyui": "^4.12.10",
