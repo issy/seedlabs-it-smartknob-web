@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import { type FC, type PropsWithChildren, useEffect, useState } from "react";
 import dontTouchImage from "../../assets/DontTouchKnob.png";
 import placeWeightImage from "../../assets/PlaceWeight.png";
 import removeWeightImage from "../../assets/RemoveWeight.png";
@@ -12,7 +12,7 @@ interface StrainCalibProps extends PropsWithChildren {
   index: number;
 }
 
-const StrainCalib: React.FC<StrainCalibProps> = ({ index }) => {
+const StrainCalib: FC<StrainCalibProps> = ({ index }) => {
   const { knob, serial, log } = useSmartKnobStore();
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [run, setRun] = useState<number>(1);
@@ -27,13 +27,6 @@ const StrainCalib: React.FC<StrainCalibProps> = ({ index }) => {
       }),
     );
   };
-
-  // const stepRefs = [
-  //   React.createRef<HTMLDivElement>(),
-  //   React.createRef<HTMLDivElement>(),
-  //   React.createRef<HTMLDivElement>(),
-  //   React.createRef<HTMLDivElement>(),
-  // ];
 
   const checkIncludes = (str: string, count: number = 1) => {
     return (
@@ -79,6 +72,8 @@ const StrainCalib: React.FC<StrainCalibProps> = ({ index }) => {
       setRun((prev) => prev + 1);
       setCurrentStep(0);
     }
+    // Need to check the dependency array here before fixing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [log]);
 
   return (

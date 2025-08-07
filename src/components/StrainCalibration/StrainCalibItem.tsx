@@ -1,11 +1,18 @@
-import React, { PropsWithRef, useEffect, useRef, useState } from "react";
+import {
+  type FC,
+  type PropsWithRef,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./StrainCalibItem.scss";
 
 interface StrainCalibItemProps
   extends PropsWithRef<JSX.IntrinsicElements["div"]> {
   image: string;
   step: number;
-  stepHTML: React.ReactNode;
+  stepHTML: ReactNode;
   stepBtnText?: string;
   automatic?: boolean;
   automaticDuration?: number;
@@ -13,7 +20,7 @@ interface StrainCalibItemProps
   nextStepCallback?: () => void;
 }
 
-const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
+const StrainCalibItem: FC<StrainCalibItemProps> = ({
   image,
   step,
   stepHTML,
@@ -45,6 +52,8 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
       setIsAnimating(false);
       setCountdown(automaticDuration);
     }
+    // Need to check the dependency array here before fixing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
   return (
     <div
@@ -66,9 +75,9 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
         </div>
       </div>
       <button
-        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && `btn-disabled button-fill-animation animate-[fillBackground_${automaticDuration}s_forwards]`}`}
+        className={`btn ${!active && "btn-disabled pointer-events-none"} ${isAnimating && `button-fill-animation btn-disabled animate-[fillBackground_${automaticDuration}s_forwards]`}`}
         onClick={() => {
-          if (automaticDuration > 0 && automatic === false) {
+          if (automaticDuration > 0 && !automatic) {
             console.log(
               "Automatic duration is set to " + automaticDuration + "s",
             );
@@ -85,9 +94,3 @@ const StrainCalibItem: React.FC<StrainCalibItemProps> = ({
 };
 
 export default StrainCalibItem;
-
-// // ? smartKnob?.sendStrainCalibration(
-//   PB.StrainCalibration.create({
-//     calibrationWeight,
-//   }),
-// )
