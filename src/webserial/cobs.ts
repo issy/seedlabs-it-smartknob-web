@@ -8,7 +8,9 @@ export function encode(buf: Uint8Array) {
   const finish = (incllast?: boolean) => {
     dest[code_ptr] = code;
     code_ptr = dest.length;
-    incllast !== false && dest.push(0x00);
+    if (incllast !== false) {
+      dest.push(0x00);
+    }
     code = 0x01;
   };
 

@@ -113,7 +113,7 @@ export class SmartKnobCore {
       try {
         message = PB.FromSmartKnob.decode(payload);
       } catch (err) {
-        console.warn(`Invalid protobuf message ${payload}`);
+        console.warn(`Invalid protobuf message ${payload}`, err);
         return;
       }
       if (message.protocolVersion !== PROTOBUF_PROTOCOL_VERSION) {

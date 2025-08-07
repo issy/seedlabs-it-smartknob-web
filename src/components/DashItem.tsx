@@ -40,7 +40,7 @@ const DashItem: FC<DashItemProps> = ({
     >
       <header
         onClick={() => {
-          saveState && localStorage.setItem(title + index, (!open).toString());
+          if (saveState) localStorage.setItem(title + index, (!open).toString());
           setOpen(!open);
         }}
       >

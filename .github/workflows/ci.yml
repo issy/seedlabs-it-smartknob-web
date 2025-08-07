@@ -1,4 +1,4 @@
-name: Build
+name: CI
 
 on:
   push:
@@ -16,9 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
+        uses: volta-cli/action@v4
       - name: Set up pnpm and install dependencies
         uses: pnpm/action-setup@v4
         with:
@@ -33,9 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
+        uses: volta-cli/action@v4
       - name: Set up pnpm and install dependencies
         uses: pnpm/action-setup@v4
         with:
