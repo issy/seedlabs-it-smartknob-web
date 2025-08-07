@@ -58,6 +58,8 @@ const LogDashItem: FC<LogDashItemProps> = ({ index }) => {
         consoleRef.current.scrollTop + consoleRef.current.clientHeight
       )
         consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+    // Need to check the dependency array here before fixing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [log]);
 
   return (

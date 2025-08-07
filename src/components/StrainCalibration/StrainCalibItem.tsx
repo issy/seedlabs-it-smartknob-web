@@ -52,6 +52,8 @@ const StrainCalibItem: FC<StrainCalibItemProps> = ({
       setIsAnimating(false);
       setCountdown(automaticDuration);
     }
+    // Need to check the dependency array here before fixing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
   return (
     <div

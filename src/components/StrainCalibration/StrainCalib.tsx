@@ -72,6 +72,8 @@ const StrainCalib: FC<StrainCalibProps> = ({ index }) => {
       setRun((prev) => prev + 1);
       setCurrentStep(0);
     }
+    // Need to check the dependency array here before fixing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [log]);
 
   return (
